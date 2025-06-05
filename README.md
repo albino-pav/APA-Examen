@@ -58,7 +58,7 @@ Ejercicio 2: Programa de Manejo de Señales Estéreo (35%)
 Ejercicio 3: Programa de Visualización de Cuerpos Sometidos a Atracción Gravitatoria (45%)
 ---------------------------------------------------------------------------------------------
 
-Realizar un programa de simulación de cuerpos celestiales sometidos a la Ley de Gravitación Universal
+Realizar un programa de simulación de cuerpos celestes sometidos a la Ley de Gravitación Universal
 de Newton. Como mínimo debe tener las mismas funcionalidades del programa `gravedad.exe` subido a Atenea
 y hacerlo igual o mejor que éste.
 
