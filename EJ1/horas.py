@@ -1,5 +1,5 @@
-# Esta es la misma función que hice en la tarea APA-T6, lo reutilizo.
-# Importo en este en normaliza.py que es el que hace las fuinciones tkinter 
+# Esta es la misma función que hice en la tarea APA-T6, la reutilizo.
+# Importo esta en normaliza.py, que es el que hace las fuinciones tkinter 
 
 import re
 
