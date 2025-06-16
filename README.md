@@ -13,7 +13,8 @@ notas aspiradas tiene que ser igual a 16; y si se realiza entre tres, las suma t
 
 | Nombre completo              | Nota Aspirada |
 | ---------------------------- | ------------- |
-| Biel Bernal Pratdesaba       | 10            |
+| Biel Bernal Pratdesaba       | 8             |
+| Ramon Llobet Duch            | 8             |
 
 <span style="color:red">También Importante</span>
 -------------------------------------------------

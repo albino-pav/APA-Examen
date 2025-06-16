@@ -339,67 +339,191 @@ def decEstereo(ficCod, ficEste):
 
 #Tkinter
 def mono():
-win = tb.Window(themename="darkly")
-win.title("Tractament d'Àudio Estèreo")
-win.geometry("800x500")
-win.resizable(False, False)
+    win = tb.Window(themename="darkly")
+    win.title("Tractament d'Àudio Estèreo")
+    win.geometry("800x500")
+    win.resizable(False, False)
 
-ttk.Label(win, text="🎧 Tractament de Senyals Estèreo", font=("Segoe UI", 20, "bold")).pack(pady=10)
+    ttk.Label(win, text="Tractament de Senyals Estèreo", font=("Segoe UI", 20, "bold")).pack(pady=10)
 
-notebook = ttk.Notebook(win)
-notebook.pack(fill='both', expand=True, padx=20, pady=10)
+    notebook = ttk.Notebook(win)
+    notebook.pack(fill='both', expand=True, padx=20, pady=10)
 
-# === PESTANYA 1: Estèreo a Mono ===
-pest1 = ttk.Frame(notebook)
-notebook.add(pest1, text="🎚 Estèreo a Mono")
+    # === PESTANYA 1: Estèreo a Mono ===
+    pest1 = ttk.Frame(notebook)
+    notebook.add(pest1, text="Estèreo a Mono")
 
-entrada_path = tk.StringVar()
-sortida_path = tk.StringVar()
-canal_sel = tk.IntVar(value=2)
-missatge = tk.StringVar()
+    entrada_path = tk.StringVar()
+    sortida_path = tk.StringVar()
+    canal_sel = tk.IntVar(value=2)
+    missatge = tk.StringVar()
 
-frame1 = ttk.Frame(pest1, padding=20)
-frame1.pack(fill='both', expand=True)
+    frame1 = ttk.Frame(pest1, padding=20)
+    frame1.pack(fill='both', expand=True)
 
-def seleccionar_entrada():
-    fitxer = fd.askopenfilename(filetypes=[("Fitxers WAVE", "*.wav")])
-    entrada_path.set(fitxer)
+    def seleccionar_entrada():
+        fitxer = fd.askopenfilename(filetypes=[("Fitxers WAVE", "*.wav")])
+        entrada_path.set(fitxer)
 
-def seleccionar_sortida():
-    fitxer = fd.asksaveasfilename(defaultextension=".wav", filetypes=[("Fitxers WAVE", "*.wav")])
-    sortida_path.set(fitxer)
+    def seleccionar_sortida():
+        fitxer = fd.asksaveasfilename(defaultextension=".wav", filetypes=[("Fitxers WAVE", "*.wav")])
+        sortida_path.set(fitxer)
 
-def convertir():
-    if entrada_path.get() and sortida_path.get():
-        try:
-            estereo2mono(entrada_path.get(), sortida_path.get(), canal_sel.get())
-            missatge.set("Conversió realitzada correctament.")
-        except Exception as e:
-            missatge.set(f"Error: {e}")
-    else:
-        missatge.set("Cal seleccionar els fitxers.")
+    def convertir():
+        if entrada_path.get() and sortida_path.get():
+            try:
+                estereo2mono(entrada_path.get(), sortida_path.get(), canal_sel.get())
+                missatge.set("Conversió realitzada correctament.")
+            except Exception as e:
+                missatge.set(f"Error: {e}")
+        else:
+            missatge.set("Cal seleccionar els fitxers.")
 
-# Widgets
-ttk.Button(frame1, text="Fitxer estèreo d'entrada", command=seleccionar_entrada).pack(fill='x')
-ttk.Label(frame1, textvariable=entrada_path, foreground="blue").pack(fill='x')
+    # Widgets
+    ttk.Button(frame1, text="Fitxer estèreo d'entrada", command=seleccionar_entrada).pack(fill='x')
+    ttk.Label(frame1, textvariable=entrada_path, foreground="blue").pack(fill='x')
 
-ttk.Label(frame1, text="Selecciona canal:").pack(pady=(10, 0))
-canals = [("Esquerre (L)", 0), ("Dret (R)", 1), ("Semisuma (L+R)/2", 2), ("Semidiferència (L-R)/2", 3)]
-for text, val in canals:
-    ttk.Radiobutton(frame1, text=text, variable=canal_sel, value=val).pack(anchor='w')
+    ttk.Label(frame1, text="Selecciona canal:").pack(pady=(10, 0))
+    canals = [("Esquerre (L)", 0), ("Dret (R)", 1), ("Semisuma (L+R)/2", 2), ("Semidiferència (L-R)/2", 3)]
+    for text, val in canals:
+        ttk.Radiobutton(frame1, text=text, variable=canal_sel, value=val).pack(anchor='w')
 
-ttk.Button(frame1, text="Fitxer mono de sortida", command=seleccionar_sortida).pack(fill='x', pady=(10, 0))
-ttk.Label(frame1, textvariable=sortida_path, foreground="blue").pack(fill='x')
+    ttk.Button(frame1, text="Fitxer mono de sortida", command=seleccionar_sortida).pack(fill='x', pady=(10, 0))
+    ttk.Label(frame1, textvariable=sortida_path, foreground="blue").pack(fill='x')
 
-ttk.Button(frame1, text="Convertir a Mono", command=convertir, bootstyle="success").pack(pady=15)
-ttk.Label(frame1, textvariable=missatge, foreground="green").pack()
+    ttk.Button(frame1, text="Convertir a Mono", command=convertir, bootstyle="success").pack(pady=15)
+    ttk.Label(frame1, textvariable=missatge, foreground="green").pack()
 
-# === ALTRES PESTANYES buides per afegir després ===
-notebook.add(ttk.Frame(notebook), text="Mono a Estèreo")
-notebook.add(ttk.Frame(notebook), text="Codifica Estèreo")
-notebook.add(ttk.Frame(notebook), text="Descodifica Estèreo")
+    
+    
+        # === PESTANYA 2: Mono a Estèreo ===
+    pest2 = ttk.Frame(notebook)
+    notebook.add(pest2, text="Mono a Estèreo")
 
-win.mainloop()
+    frame2 = ttk.Frame(pest2, padding=20)
+    frame2.pack(fill='both', expand=True)
+
+    entradaL_path = tk.StringVar()
+    entradaR_path = tk.StringVar()
+    sortidaStereo_path = tk.StringVar()
+    missatge2 = tk.StringVar()
+
+    def seleccionar_entradaL():
+        fitxer = fd.askopenfilename(filetypes=[("Fitxers WAVE", "*.wav")])
+        entradaL_path.set(fitxer)
+
+    def seleccionar_entradaR():
+        fitxer = fd.askopenfilename(filetypes=[("Fitxers WAVE", "*.wav")])
+        entradaR_path.set(fitxer)
+
+    def seleccionar_sortida_stereo():
+        fitxer = fd.asksaveasfilename(defaultextension=".wav", filetypes=[("Fitxers WAVE", "*.wav")])
+        sortidaStereo_path.set(fitxer)
+
+    def combinar():
+        if entradaL_path.get() and entradaR_path.get() and sortidaStereo_path.get():
+            try:
+                mono2stereo(entradaL_path.get(), entradaR_path.get(), sortidaStereo_path.get())
+                missatge2.set("Conversió feta correctament.")
+            except Exception as e:
+                missatge2.set(f"Error: {e}")
+        else:
+            missatge2.set("Cal seleccionar tots els fitxers.")
+
+    # Widgets pestanya 2
+    ttk.Button(frame2, text="Canal esquerre (L)", command=seleccionar_entradaL).pack(fill='x')
+    ttk.Label(frame2, textvariable=entradaL_path, foreground="blue").pack(fill='x')
+
+    ttk.Button(frame2, text="Canal dret (R)", command=seleccionar_entradaR).pack(fill='x', pady=(5, 0))
+    ttk.Label(frame2, textvariable=entradaR_path, foreground="blue").pack(fill='x')
+
+    ttk.Button(frame2, text="Fitxer estèreo de sortida", command=seleccionar_sortida_stereo).pack(fill='x', pady=(10, 0))
+    ttk.Label(frame2, textvariable=sortidaStereo_path, foreground="blue").pack(fill='x')
+
+    ttk.Button(frame2, text="Combinar a Estèreo", command=combinar, bootstyle="success").pack(pady=15)
+    ttk.Label(frame2, textvariable=missatge2, foreground="green").pack()
+
+    
+        # === PESTANYA 3: Codifica Estèreo ===
+    pest3 = ttk.Frame(notebook)
+    notebook.add(pest3, text="Codifica Estèreo")
+
+    frame3 = ttk.Frame(pest3, padding=20)
+    frame3.pack(fill='both', expand=True)
+
+    entradaCod_path = tk.StringVar()
+    sortidaCod_path = tk.StringVar()
+    missatge3 = tk.StringVar()
+
+    def seleccionar_entrada_cod():
+        fitxer = fd.askopenfilename(filetypes=[("Fitxers WAVE", "*.wav")])
+        entradaCod_path.set(fitxer)
+
+    def seleccionar_sortida_cod():
+        fitxer = fd.asksaveasfilename(defaultextension=".wav", filetypes=[("Fitxers WAVE", "*.wav")])
+        sortidaCod_path.set(fitxer)
+
+    def codificar():
+        if entradaCod_path.get() and sortidaCod_path.get():
+            try:
+                codEstereo(entradaCod_path.get(), sortidaCod_path.get())
+                missatge3.set("Codificació realitzada correctament.")
+            except Exception as e:
+                missatge3.set(f"Error: {e}")
+        else:
+            missatge3.set("Cal seleccionar els fitxers.")
+
+    ttk.Button(frame3, text="Fitxer estèreo d'entrada", command=seleccionar_entrada_cod).pack(fill='x')
+    ttk.Label(frame3, textvariable=entradaCod_path, foreground="blue").pack(fill='x')
+
+    ttk.Button(frame3, text="Fitxer codificat de sortida", command=seleccionar_sortida_cod).pack(fill='x', pady=(10, 0))
+    ttk.Label(frame3, textvariable=sortidaCod_path, foreground="blue").pack(fill='x')
+
+    ttk.Button(frame3, text="Codificar", command=codificar, bootstyle="success").pack(pady=15)
+    ttk.Label(frame3, textvariable=missatge3, foreground="green").pack()
+
+
+        # === PESTANYA 4: Descodifica Estèreo ===
+    pest4 = ttk.Frame(notebook)
+    notebook.add(pest4, text="Descodifica Estèreo")
+
+    frame4 = ttk.Frame(pest4, padding=20)
+    frame4.pack(fill='both', expand=True)
+
+    entradaDec_path = tk.StringVar()
+    sortidaDec_path = tk.StringVar()
+    missatge4 = tk.StringVar()
+
+    def seleccionar_entrada_dec():
+        fitxer = fd.askopenfilename(filetypes=[("Fitxers WAVE", "*.wav")])
+        entradaDec_path.set(fitxer)
+
+    def seleccionar_sortida_dec():
+        fitxer = fd.asksaveasfilename(defaultextension=".wav", filetypes=[("Fitxers WAVE", "*.wav")])
+        sortidaDec_path.set(fitxer)
+
+    def descodificar():
+        if entradaDec_path.get() and sortidaDec_path.get():
+            try:
+                decEstereo(entradaDec_path.get(), sortidaDec_path.get())
+                missatge4.set("Descodificació realitzada correctament.")
+            except Exception as e:
+                missatge4.set(f"Error: {e}")
+        else:
+            missatge4.set("Cal seleccionar els fitxers.")
+
+    ttk.Button(frame4, text="Fitxer codificat (32 bits)", command=seleccionar_entrada_dec).pack(fill='x')
+    ttk.Label(frame4, textvariable=entradaDec_path, foreground="blue").pack(fill='x')
+
+    ttk.Button(frame4, text="Fitxer estèreo de sortida", command=seleccionar_sortida_dec).pack(fill='x', pady=(10, 0))
+    ttk.Label(frame4, textvariable=sortidaDec_path, foreground="blue").pack(fill='x')
+
+    ttk.Button(frame4, text="Descodificar", command=descodificar, bootstyle="success").pack(pady=15)
+    ttk.Label(frame4, textvariable=missatge4, foreground="green").pack()
+
+
+
+    win.mainloop()
 
 if __name__ == "__main__":
-mono()
+    mono() 
