@@ -1,4 +1,4 @@
-Algorismia i Programació Audiovisual
+lgorismia i Programació Audiovisual
 ====================================
 
 Examen Final - Primavera de 2025
@@ -13,9 +13,8 @@ notas aspiradas tiene que ser igual a 16; y si se realiza entre tres, las suma t
 
 | Nombre completo              | Nota Aspirada |
 | ---------------------------- | ------------- |
-| Fulano Martínez Díaz         | 8             |
-| Mengano Díaz Martínez        | 6             |
-| Zutano de la Rosa Florida    | 4             |
+| Àlex Segura Medina           | 8             |
+| Sebastian Pérez Capitano     | 8             |
 
 <span style="color:red">También Importante</span>
 -------------------------------------------------
