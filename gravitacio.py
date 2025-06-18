@@ -6,6 +6,9 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
 import random
 import math
+import os
+import tempfile
+import subprocess
 
 # =============== Variables Globals ===============
 cossos = []
@@ -15,6 +18,7 @@ G = 1.0  # Constant gravitatòria
 velocitat_temps = 1.0  # Valor inicial (1x)
 finestres_obertes = []  # Llista per controlar finestres secundàries
 color_fons = "#000033"
+fitxer_temporal_editable = None  # Ruta del fitxer temporal per editar cossos
 
 # =============== Classe del cos ===============
 class CosCeleste:
@@ -54,10 +58,99 @@ def carregar_posicions(ax, canvas):
                     cossos.append(cos)
         dibuixa_tots_els_cossos(ax, canvas)
 
+# =============== Finestra avaluació ===============
+def mostra_missatge_avaluacio():
+    finestra = tk.Toplevel()
+    finestra.title("Nota de la Version RB1.0")
+    finestra.geometry("300x100")
+    ttk.Label(finestra, text="Ens pots posar un 10 ;)!", font=("Segoe UI", 12)).pack(expand=True, pady=20)
+    ttk.Button(finestra, text="Tancar", command=finestra.destroy).pack(pady=5)
+
+# =============== Funció per editar cossos ===============
+def obrir_editor_de_cossos():
+    global fitxer_temporal_editable
+
+    if not cossos:
+        return
+
+    with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix=".csv") as fitxer:
+        fitxer.write("forma,mida,massa,color,pos_x,pos_y,vel_x,vel_y\n")
+        for cos in cossos:
+            fitxer.write(f"{cos.forma},{cos.mida},{cos.massa},{cos.color},{cos.pos_x},{cos.pos_y},{cos.vel_x},{cos.vel_y}\n")
+        fitxer_temporal_editable = fitxer.name
+
+    subprocess.call(['code', fitxer_temporal_editable])
+
+def recarregar_cossos_editats(ax, canvas):
+    global cossos, fitxer_temporal_editable
+    if not fitxer_temporal_editable:
+        return
+
+    try:
+        with open(fitxer_temporal_editable, 'r') as f:
+            linies = f.readlines()[1:]  # Salta la capçalera
+            cossos = []
+            for linia in linies:
+                parts = linia.strip().split(',')
+                if len(parts) == 8:
+                    forma, mida, massa, color, pos_x, pos_y, vel_x, vel_y = parts
+                    cos = CosCeleste(
+                        forma, float(mida), float(massa), color,
+                        float(pos_x), float(pos_y), float(vel_x), float(vel_y)
+                    )
+                    cossos.append(cos)
+        dibuixa_tots_els_cossos(ax, canvas)
+    except Exception as e:
+        print("Error recarregant fitxer:", e)
+
+# =============== Finestra mostrar ajuda ===============
+
+def mostrar_instruccions():
+    ajuda = tk.Toplevel()
+    ajuda.title("Instruccions")
+    ajuda.geometry("600x500")
+    ajuda.configure(bg='black')
+
+    text = tk.Text(ajuda, wrap='word', bg='black', fg='white', font=('Segoe UI', 11))
+    text.pack(expand=True, fill='both', padx=10, pady=10)
+
+    instruccions = """
+SIMULADOR GRAVITACIONAL – Instruccions d'ús 
+
+Creació de cossos:
+- Fes clic a 'Crear cuerpo' (menú o botó) per definir un nou cos.
+- Pots indicar forma, mida, massa, color, posició i velocitat inicial.
+- També pots crear 10 cossos aleatoris amb un sol clic.
+
+Edició de cossos:
+- Ves al menú 'Cuerpos' > 'Editar cuerpo'.
+- Es generarà un fitxer temporal que pots modificar amb VS Code.
+- Després, guarda'l i usa 'Recarregar cossos editats' per aplicar els canvis.
+
+Control de la simulació:
+- 'Inicia': comença la simulació.
+- 'Pausa': pausa/continua la simulació.
+- 'Reset': elimina tots els cossos.
+- 'Termina': surt del programa.
+
+Paràmetres:
+- Pots controlar la velocitat temporal i la constant gravitatòria amb sliders o entrada manual.
+- També pots canviar el color del fons galàctic.
+
+Guarda i carrega:
+- Al menú 'Archivo' pots guardar les posicions actuals o carregar-ne de prèviament desades.
+
+Versió:
+- Consulta la pestanya 'Evaluacion' per a la nota actual de la versió.
+
+"""
+    text.insert('1.0', instruccions)
+    text.config(state='disabled')
+
 # =============== Dibuix ===============
 def dibuixa_tots_els_cossos(ax, canvas):
     ax.clear()
-    ax.set_facecolor("#111144")
+    ax.set_facecolor(color_fons)
     ax.set_aspect('equal')
     ax.set_xticks([])
     ax.set_yticks([])
@@ -140,6 +233,24 @@ def simulador_gravitacional_ui():
     archivo_menu.add_command(label="Carregar posicions", command=lambda: carregar_posicions(ax, canvas))
     menu_bar.add_cascade(label="Archivo", menu=archivo_menu)
 
+    # Pestanya Evaluacion
+    evaluacion_menu = tk.Menu(menu_bar, tearoff=0)
+    evaluacion_menu.add_command(label="Nota de la Versió RB1.0", command=mostra_missatge_avaluacio)
+    menu_bar.add_cascade(label="Evaluación", menu=evaluacion_menu)
+
+    # Pestanya Cuerpos
+    cuerpos_menu = tk.Menu(menu_bar, tearoff=0)
+    cuerpos_menu.add_command(label="Crear cuerpo", command=lambda: finestra_crear_cos(win, ax, canvas))
+    cuerpos_menu.add_command(label="Editar cuerpo", command=obrir_editor_de_cossos)
+    cuerpos_menu.add_command(label="Recarregar cossos editats", command=lambda: recarregar_cossos_editats(ax, canvas))
+    menu_bar.add_cascade(label="Cuerpos", menu=cuerpos_menu)
+
+    # Pestanya Ayuda
+    ayuda_menu = tk.Menu(menu_bar, tearoff=0)
+    ayuda_menu.add_command(label="Instruccions", command=mostrar_instruccions)
+    menu_bar.add_cascade(label="Ayuda", menu=ayuda_menu)
+
+
     frame_principal = ttk.Frame(win)
     frame_principal.pack(fill='both', expand=True)
 
@@ -172,13 +283,12 @@ def simulador_gravitacional_ui():
         if nou_color:
             color_fons = nou_color
             boto.config(bg=color_fons)
-            fig.patch.set_facecolor(color_fons)
             ax.set_facecolor(color_fons)
             frame_canvas.config(bg=color_fons)
             dibuixa_tots_els_cossos(ax, canvas)
 
     # === Control de velocitat temporal ===
-    ttk.Label(frame_controls, text="Velocitat temporal:").pack(anchor='w', pady=(20, 5))
+    ttk.Label(frame_controls, text="Velocidad temporal:").pack(anchor='w', pady=(20, 5))
 
     velocitat_frame = ttk.Frame(frame_controls)
     velocitat_frame.pack(anchor='w', pady=(0, 10))
@@ -214,7 +324,7 @@ def simulador_gravitacional_ui():
     velocitat_entry.bind("<Return>", entrada_manual)
 
     # === Control de constant gravitatòria G ===
-    ttk.Label(frame_controls, text="Constant gravitatòria (G):").pack(anchor='w', pady=(20, 5))
+    ttk.Label(frame_controls, text="Constante gravitatoria (G):").pack(anchor='w', pady=(20, 5))
 
     G_frame = ttk.Frame(frame_controls)
     G_frame.pack(anchor='w', pady=(0, 10))
@@ -386,11 +496,10 @@ def finestra_crear_cos(master, ax=None, canvas=None):
 
     boto_frame = ttk.Frame(finestra)
     boto_frame.pack(pady=15)
-    ttk.Button(boto_frame, text="Crear Aleatori", bootstyle="info", command=crear_i_afegir_cos_aleatori).pack(side='left', padx=5)
+    ttk.Button(boto_frame, text="Crear Aleatorio", bootstyle="info", command=crear_i_afegir_cos_aleatori).pack(side='left', padx=5)
     ttk.Button(boto_frame, text="Aceptar", bootstyle="success", command=acceptar).pack(side='left', padx=5)
-    ttk.Button(boto_frame, text="Sortir", bootstyle="danger", command=lambda: [finestres_obertes.remove(finestra), finestra.destroy()]).pack(side='left', padx=5)
-    ttk.Button(boto_frame, text="Crear 10 aleatoris", bootstyle="info", command=crear_deu_cossos_aleatoris).pack(side='left', padx=5)
-
+    ttk.Button(boto_frame, text="Salir", bootstyle="danger", command=lambda: [finestres_obertes.remove(finestra), finestra.destroy()]).pack(side='left', padx=5)
+    ttk.Button(boto_frame, text="Crear 10 aleatorios", bootstyle="info", command=crear_deu_cossos_aleatoris).pack(side='left', padx=5)
 
 
 if __name__ == "__main__":
