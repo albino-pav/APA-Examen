@@ -13,7 +13,7 @@ notas aspiradas tiene que ser igual a 16; y si se realiza entre tres, las suma t
 
 | Nombre completo              | Nota Aspirada |
 | ---------------------------- | ------------- |
-| Joan Gallardo Caparrós       | 7             |
+| Joan Gallardo Caparrós       | 10            |
 
 <span style="color:red">También Importante</span>
 -------------------------------------------------
