@@ -6,125 +6,100 @@
         Àlex Segura Medina 
 
         Ejercicio 2: Programa de Manejo de Señales Estéreo (35%)
-        · Construya el programa mono.py que permita realizar las funciones de la tarea APA-T5 en un entorno gráfico usando TkInter.
 
 '''
 
 
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
+import wave
 import struct
 
-# Asegúrate de que estas funciones están en este archivo o importadas correctamente
-# from tu_modulo import estereo2mono, mono2estereo
+# Utilizamos las funciones extraídas de la tarea APA-T5 para manejar archivos de audio estéreo y mono.
+def estereo2mono(ficEste, ficMono, canal):
+    with wave.open(ficEste, 'rb') as w:
+        if w.getnchannels() != 2 or w.getsampwidth() != 2:
+            raise ValueError("El archivo no es estéreo o no es PCM 16-bit")
+        params = w.getparams()
+        frames = w.readframes(params.nframes)
+        datos = struct.unpack('<' + 'h' * params.nframes * 2, frames)
 
-def estereo2mono(ficEste, ficMono, canal = 2):
-
-    """
-    
-    Convierte un archivo WAVE estéreo a mono en función del canal indicado:
-    0 = izquierdo, 1 = derecho, 2 = semisuma, 3 = semidiferencia.
-
-    """
-    with open(ficEste, 'rb') as fe:
-        cabecera = fe.read(44)
-        if cabecera[0:4] != b'RIFF' or cabecera[8:12] != b'WAVE':
-            raise ValueError("El fichero de entrada no es un WAVE válido")
-
-        fmt_tag, n_channels, sample_rate, byte_rate, block_align, bps = struct.unpack('<HHIIHH', cabecera[20:36])
-        if n_channels != 2 or fmt_tag != 1 or bps != 16:
-            raise ValueError("El fichero no es estéreo o no usa PCM lineal de 16 bits")
-
-        data_size = struct.unpack('<I', cabecera[40:44])[0]
-        num_frames = data_size // 4  # 4 bytes por muestra estéreo (2 bytes por canal)
-        datos = fe.read()
-
-    muestras = struct.unpack('<' + 'hh'*num_frames, datos)
-    if canal == 0:
-        canal_mono = [muestras[i] for i in range(0, len(muestras), 2)]
-    elif canal == 1:
-        canal_mono = [muestras[i] for i in range(1, len(muestras), 2)]
-    elif canal == 2:
-        canal_mono = [(muestras[i] + muestras[i+1]) // 2 for i in range(0, len(muestras), 2)]
-    elif canal == 3:
-        canal_mono = [(muestras[i] - muestras[i+1]) // 2 for i in range(0, len(muestras), 2)]
+    if canal == 0:  # izquierdo
+        nuevo = datos[::2]
+    elif canal == 1:  # derecho
+        nuevo = datos[1::2]
+    elif canal == 2:  # semisuma
+        nuevo = [(datos[i] + datos[i + 1]) // 2 for i in range(0, len(datos), 2)]
+    elif canal == 3:  # semidiferencia
+        nuevo = [(datos[i] - datos[i + 1]) // 2 for i in range(0, len(datos), 2)]
     else:
-        raise ValueError("Parámetro 'canal' no válido. Usa 0, 1, 2 o 3.")
+        raise ValueError("Canal no válido")
 
-    nuevo_data_size = len(canal_mono) * 2  # 2 bytes por muestra
-    nuevo_byte_rate = sample_rate * 2
-    nuevo_block_align = 2
-    with open(ficMono, 'wb') as fm:
-        fm.write(b'RIFF')
-        fm.write(struct.pack('<I', 36 + nuevo_data_size))
-        fm.write(b'WAVE')
-        fm.write(b'fmt ')
-        fm.write(struct.pack('<IHHIIHH', 16, 1, 1, sample_rate,
-                             nuevo_byte_rate, nuevo_block_align, 16))
-        fm.write(b'data')
-        fm.write(struct.pack('<I', nuevo_data_size))
-        fm.write(struct.pack('<' + 'h'*len(canal_mono), *canal_mono))
-
+    with wave.open(ficMono, 'wb') as w:
+        w.setparams((1, 2, params.framerate, 0, 'NONE', 'not compressed'))
+        w.writeframes(struct.pack('<' + 'h' * len(nuevo), *nuevo))
 
 
 def mono2estereo(ficIzq, ficDer, ficEste):
-    """
+    with wave.open(ficIzq, 'rb') as wi, wave.open(ficDer, 'rb') as wd:
+        if wi.getnchannels() != 1 or wi.getsampwidth() != 2 or wd.getnchannels() != 1 or wd.getsampwidth() != 2:
+            raise ValueError("Ambos archivos deben ser mono PCM 16-bit")
+        if wi.getframerate() != wd.getframerate():
+            raise ValueError("Las frecuencias de muestreo no coinciden")
+        frames_i = struct.unpack('<' + 'h' * wi.getnframes(), wi.readframes(wi.getnframes()))
+        frames_d = struct.unpack('<' + 'h' * wd.getnframes(), wd.readframes(wd.getnframes()))
 
-    Genera un archivo WAVE estéreo combinando dos archivos WAVE mono.
+    minimo = min(len(frames_i), len(frames_d))
+    entrelazado = [val for pair in zip(frames_i[:minimo], frames_d[:minimo]) for val in pair]
 
-    """
-    with open(ficIzq, 'rb') as fz:
-        header_izq = fz.read(44)
-        if header_izq[0:4] != b'RIFF' or header_izq[8:12] != b'WAVE':
-            raise ValueError("ficIzq no es un fichero WAVE válido")
-        fmt_tag, nchannels, sample_rate, _, _, bps = struct.unpack('<HHIIHH', header_izq[20:36])
-        if nchannels != 1 or fmt_tag != 1 or bps != 16:
-            raise ValueError("ficIzq no es un fichero mono PCM 16-bit válido")
-        data_izq = fz.read()
-
-    with open(ficDer, 'rb') as fd:
-        header_der = fd.read(44)
-        if header_der[0:4] != b'RIFF' or header_der[8:12] != b'WAVE':
-            raise ValueError("ficDer no es un fichero WAVE válido")
-        fmt_tag_d, nchannels_d, sample_rate_d, _, _, bps_d = struct.unpack('<HHIIHH', header_der[20:36])
-        if nchannels_d != 1 or fmt_tag_d != 1 or bps_d != 16:
-            raise ValueError("ficDer no es un fichero mono PCM 16-bit válido")
-        if sample_rate_d != sample_rate or bps_d != bps:
-            raise ValueError("Los ficheros mono no tienen la misma configuración")
-        data_der = fd.read()
-
-    muestras_izq = struct.unpack('<' + 'h' * (len(data_izq) // 2), data_izq)
-    muestras_der = struct.unpack('<' + 'h' * (len(data_der) // 2), data_der)
-    if len(muestras_izq) != len(muestras_der):
-        raise ValueError("Los ficheros mono no tienen el mismo número de muestras")
-
-    intercaladas = [val for pair in zip(muestras_izq, muestras_der) for val in pair]
-    data_size = len(intercaladas) * 2  # 2 bytes por muestra
-    byte_rate = sample_rate * 4        # 2 canales x 2 bytes
-    block_align = 4                    # 2 canales x 2 bytes
-
-    with open(ficEste, 'wb') as fe:
-        fe.write(b'RIFF')
-        fe.write(struct.pack('<I', 36 + data_size))
-        fe.write(b'WAVE')
-        fe.write(b'fmt ')
-        fe.write(struct.pack('<IHHIIHH', 16, 1, 2, sample_rate,
-                             byte_rate, block_align, 16))
-        fe.write(b'data')
-        fe.write(struct.pack('<I', data_size))
-        fe.write(struct.pack('<' + 'h' * len(intercaladas), *intercaladas))
+    with wave.open(ficEste, 'wb') as w:
+        w.setparams((2, 2, wi.getframerate(), 0, 'NONE', 'not compressed'))
+        w.writeframes(struct.pack('<' + 'h' * len(entrelazado), *entrelazado))
 
 
+def codEstereo(ficEste, ficCod):
+    with wave.open(ficEste, 'rb') as w:
+        if w.getnchannels() != 2 or w.getsampwidth() != 2:
+            raise ValueError("Debe ser un archivo estéreo PCM 16-bit")
+        params = w.getparams()
+        datos = struct.unpack('<' + 'h' * params.nframes * 2, w.readframes(params.nframes))
+
+    semisuma = [(datos[i] + datos[i + 1]) for i in range(0, len(datos), 2)]
+    semidif = [(datos[i] - datos[i + 1]) for i in range(0, len(datos), 2)]
+    codificado = [val for par in zip(semisuma, semidif) for val in par]
+
+    with wave.open(ficCod, 'wb') as w:
+        w.setparams((1, 4, params.framerate, 0, 'NONE', 'not compressed'))
+        w.writeframes(struct.pack('<' + 'i' * len(codificado), *codificado))
 
 
+def decEstereo(ficCod, ficEste):
+    with wave.open(ficCod, 'rb') as w:
+        if w.getnchannels() != 1 or w.getsampwidth() != 4:
+            raise ValueError("Archivo codificado debe ser mono de 32 bits por muestra")
+        params = w.getparams()
+        datos = struct.unpack('<' + 'i' * w.getnframes(), w.readframes(w.getnframes()))
+
+    if len(datos) % 2 != 0:
+        raise ValueError("Número impar de muestras: faltan datos")
+
+    izq = [(datos[i] + datos[i + 1]) // 2 for i in range(0, len(datos), 2)]
+    der = [(datos[i] - datos[i + 1]) // 2 for i in range(0, len(datos), 2)]
+    combinado = [val for par in zip(izq, der) for val in par]
+
+    with wave.open(ficEste, 'wb') as w:
+        w.setparams((2, 2, params.framerate, 0, 'NONE', 'not compressed'))
+        w.writeframes(struct.pack('<' + 'h' * len(combinado), *combinado))
+
+
+
+# INTERFAZ GRÁFICA: Uso de tkinter para crear una aplicación que permita al usuario seleccionar archivos y realizar conversiones.
 class AplicacionMono:
     def __init__(self, root):
         self.root = root
-        root.title("APA-T5: Procesado Estéreo/Mono")
-
+        root.title("Procesado Estéreo/Mono")
         self.notebook = ttk.Notebook(root)
         self.notebook.pack(expand=True, fill="both")
-
         self.crea_pestana_estereo2mono()
         self.crea_pestana_mono2estereo()
         self.crea_pestana_codifica()
@@ -133,16 +108,13 @@ class AplicacionMono:
     def crea_pestana_estereo2mono(self):
         marco = ttk.Frame(self.notebook)
         self.notebook.add(marco, text="Estéreo a Mono")
-
         ttk.Label(marco, text="Archivo estéreo:").grid(row=0, column=0, padx=5, pady=5)
         self.entrada_estereo = ttk.Entry(marco, width=50)
         self.entrada_estereo.grid(row=0, column=1)
         ttk.Button(marco, text="Buscar", command=self.selecciona_estereo).grid(row=0, column=2)
-
         ttk.Label(marco, text="Canal (0-3):").grid(row=1, column=0, padx=5, pady=5)
         self.canal_var = tk.IntVar(value=2)
         ttk.Spinbox(marco, from_=0, to=3, textvariable=self.canal_var, width=5).grid(row=1, column=1, sticky='w')
-
         ttk.Button(marco, text="Convertir a Mono", command=self.convertir_a_mono).grid(row=2, column=0, columnspan=3, pady=10)
 
     def selecciona_estereo(self):
@@ -167,17 +139,14 @@ class AplicacionMono:
     def crea_pestana_mono2estereo(self):
         marco = ttk.Frame(self.notebook)
         self.notebook.add(marco, text="Mono a Estéreo")
-
         ttk.Label(marco, text="Canal Izquierdo:").grid(row=0, column=0)
         self.entrada_izq = ttk.Entry(marco, width=50)
         self.entrada_izq.grid(row=0, column=1)
         ttk.Button(marco, text="Buscar", command=lambda: self.selecciona_mono(self.entrada_izq)).grid(row=0, column=2)
-
         ttk.Label(marco, text="Canal Derecho:").grid(row=1, column=0)
         self.entrada_der = ttk.Entry(marco, width=50)
         self.entrada_der.grid(row=1, column=1)
         ttk.Button(marco, text="Buscar", command=lambda: self.selecciona_mono(self.entrada_der)).grid(row=1, column=2)
-
         ttk.Button(marco, text="Fusionar", command=self.fusionar_mono).grid(row=2, column=0, columnspan=3, pady=10)
 
     def selecciona_mono(self, campo):
@@ -203,14 +172,51 @@ class AplicacionMono:
     def crea_pestana_codifica(self):
         marco = ttk.Frame(self.notebook)
         self.notebook.add(marco, text="Codifica Estéreo")
-        ttk.Label(marco, text="(A implementar)").pack(pady=20)
+        ttk.Label(marco, text="Archivo estéreo:").grid(row=0, column=0)
+        self.entrada_cod = ttk.Entry(marco, width=50)
+        self.entrada_cod.grid(row=0, column=1)
+        ttk.Button(marco, text="Buscar", command=lambda: self.selecciona_mono(self.entrada_cod)).grid(row=0, column=2)
+        ttk.Button(marco, text="Codificar", command=self.codificar_estereo).grid(row=1, column=0, columnspan=3, pady=10)
+
+    def codificar_estereo(self):
+        entrada = self.entrada_cod.get()
+        if not entrada:
+            return messagebox.showwarning("Atención", "Selecciona un archivo estéreo")
+        salida = filedialog.asksaveasfilename(defaultextension=".wav", filetypes=[("Archivos WAVE", "*.wav")])
+        if not salida:
+            return
+        try:
+            codEstereo(entrada, salida)
+            messagebox.showinfo("Éxito", "Archivo codificado")
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
 
     def crea_pestana_descodifica(self):
         marco = ttk.Frame(self.notebook)
         self.notebook.add(marco, text="Descodifica Estéreo")
-        ttk.Label(marco, text="(A implementar)").pack(pady=20)
+        ttk.Label(marco, text="Archivo codificado:").grid(row=0, column=0)
+        self.entrada_dec = ttk.Entry(marco, width=50)
+        self.entrada_dec.grid(row=0, column=1)
+        ttk.Button(marco, text="Buscar", command=lambda: self.selecciona_mono(self.entrada_dec)).grid(row=0, column=2)
+        ttk.Button(marco, text="Descodificar", command=self.descodificar_estereo).grid(row=1, column=0, columnspan=3, pady=10)
 
+    def descodificar_estereo(self):
+        entrada = self.entrada_dec.get()
+        if not entrada:
+            return messagebox.showwarning("Atención", "Selecciona un archivo codificado")
+        salida = filedialog.asksaveasfilename(defaultextension=".wav", filetypes=[("Archivos WAVE", "*.wav")])
+        if not salida:
+            return
+        try:
+            decEstereo(entrada, salida)
+            messagebox.showinfo("Éxito", "Archivo descodificado")
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
+
+
+# Ejecución (desde el terminal usamos: python3 mono.py)
 if __name__ == "__main__":
     root = tk.Tk()
     app = AplicacionMono(root)
     root.mainloop()
+

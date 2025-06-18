@@ -7,9 +7,6 @@
         Àlex Segura Medina 
 
         Ejercicio 1: Programa de Normalización de Expresiones Horarias (20%)
-        · Construya el programa normaliza.pyque permita leer un fichero de texto, normalice las expresiones horarias en él contenidas según las instrucciones de la tarea APA-T6 y escriba el resultado en otro fichero de texto.
-        · El fichero de entrada y el nombre del fichero de salida tendrán la extensión .txt y se escogerán usando las funciones gráficas de TkInter.filedialog.
-        · No se evaluará la calidad de la normalización (ese aspecto se evalúa en APA-T6).
 
 '''
 
@@ -118,7 +115,8 @@ def seleccionar_y_normalizar():
     except Exception as e:
         messagebox.showerror("Error", f"Ocurrió un error:\n{e}")
 
-# Ejecución
+
+# Ejecución (desde el terminal usamos: python3 normaliza.py)
 if __name__ == "__main__":
     root = tk.Tk()
     root.withdraw()
