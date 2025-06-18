@@ -1,4 +1,4 @@
-lgorismia i Programació Audiovisual
+Algorismia i Programació Audiovisual
 ====================================
 
 Examen Final - Primavera de 2025
