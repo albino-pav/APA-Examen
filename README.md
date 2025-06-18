@@ -13,9 +13,8 @@ notas aspiradas tiene que ser igual a 16; y si se realiza entre tres, las suma t
 
 | Nombre completo              | Nota Aspirada |
 | ---------------------------- | ------------- |
-| Fulano Martínez Díaz         | 8             |
-| Mengano Díaz Martínez        | 6             |
-| Zutano de la Rosa Florida    | 4             |
+| Imelda Run Montes Martín     | 8             |
+| Arnau Piñero Masegosa        | 8             |
 
 <span style="color:red">También Importante</span>
 -------------------------------------------------
