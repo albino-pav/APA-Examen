@@ -13,9 +13,8 @@ notas aspiradas tiene que ser igual a 16; y si se realiza entre tres, las suma t
 
 | Nombre completo              | Nota Aspirada |
 | ---------------------------- | ------------- |
-| Fulano Martínez Díaz         | 8             |
-| Mengano Díaz Martínez        | 6             |
-| Zutano de la Rosa Florida    | 4             |
+| Oriol Jiménez Garrich        | 9,2           |
+
 
 <span style="color:red">También Importante</span>
 -------------------------------------------------
@@ -69,3 +68,12 @@ Entrega
 
 Los tres programas deberán estar preparados para ser ejecutados desde la línea de comandos o desde
 una sesión `ipython` usando el comando `%run`.
+
+
+Para ejecutar, entrar en `ipython` y ejecutar:
+
+`%run Ejercicio_1/normaliza.py`
+
+`%run Ejercicio_2/mono.py`
+
+`%run Ejercicio_3/Ventana.py`
