@@ -2,27 +2,8 @@ Algorismia i Programació Audiovisual
 ====================================
 
 Examen Final - Primavera de 2025
+Nom: Mark Bonete Ventura
 --------------------------------
-
-<span style="color:red">Importante</span>
------------------------------------------
-
-Rellene la tabla siguiente con los nombres completos y la nota aspirada de cada participante. Recuerde que
-si este examen se realiza en solitario, la nota aspirada es 10; si se realiza entre dos, la suma de las
-notas aspiradas tiene que ser igual a 16; y si se realiza entre tres, las suma tiene que ser 18.
-
-| Nombre completo              | Nota Aspirada |
-| ---------------------------- | ------------- |
-| Fulano Martínez Díaz         | 8             |
-| Mengano Díaz Martínez        | 6             |
-| Zutano de la Rosa Florida    | 4             |
-
-<span style="color:red">También Importante</span>
--------------------------------------------------
-
-Se recuerda que los ejercicios más parecidos de lo razonable se repartirán la nota. Es decir, si dos ejercicios
-merecedores de 10 se parecen mucho, la nota de cada uno será $10/2 = 5$; si
-el parecido es entre tres ejercicios, la nota será $10/3=3,33$.
 
 Ejercicio 1: Programa de Normalización de Expresiones Horarias (20%)
 ----------------------------------------------------------------------
