@@ -50,7 +50,7 @@ el parecido es entre tres ejercicios, la nota será $10/3=3,33$.
   ser compatible con sus interfaces, de manera que, al susituir el
   `estereo.py` presentado por uno que funcione correctamente, el programa `mono.py` también lo hará.
 
-## Ejercicio 3: Programa de Visualización de Partículas Sometidas a Atracción Gravitatoria (45%)
+## Ejercicio 3: Programa de Visualización de Cuerpos Sometidas a Atracción Gravitatoria (45%)
 
 Realizar un programa de simulación de cuerpos celestes sometidos a la Ley de Gravitación Universal
 de Newton. Como mínimo debe tener las mismas funcionalidades del programa `gravedad.exe` subido a Atenea
