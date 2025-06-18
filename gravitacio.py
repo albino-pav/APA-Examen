@@ -61,9 +61,9 @@ def carregar_posicions(ax, canvas):
 # =============== Finestra avaluació ===============
 def mostra_missatge_avaluacio():
     finestra = tk.Toplevel()
-    finestra.title("Nota de la Version RB1.0")
+    finestra.title("Nota de la versió RB1.0")
     finestra.geometry("300x100")
-    ttk.Label(finestra, text="Ens pots posar un 10 ;)!", font=("Segoe UI", 12)).pack(expand=True, pady=20)
+    ttk.Label(finestra, text="Ens pots posar un 10 així tneim un 8 cadascú ;)!", font=("Segoe UI", 12)).pack(expand=True, pady=20)
     ttk.Button(finestra, text="Tancar", command=finestra.destroy).pack(pady=5)
 
 # =============== Funció per editar cossos ===============
@@ -145,6 +145,33 @@ Versió:
 
 """
     text.insert('1.0', instruccions)
+    text.config(state='disabled')
+
+# =============== Credits ===============
+def mostrar_credits():
+    credits = tk.Toplevel()
+    credits.title("Crèdits")
+    credits.geometry("400x200")
+    credits.configure(bg='black')
+
+    text = tk.Text(credits, wrap='word', bg='black', fg='white', font=('Segoe UI', 12))
+    text.pack(expand=True, fill='both', padx=10, pady=10)
+
+    contingut = """
+CRÈDITS DEL PROJECTE
+
+Simulador Gravitacional RB1.0
+
+Universitat Politècnica de Catalunya
+Algorísmia i Programació Audiovisual
+
+Creat per:
+- Biel Bernal Pratdesaba
+- Ramón Llobet Duch
+
+© 2025 – Tots els drets reservats
+"""
+    text.insert('1.0', contingut)
     text.config(state='disabled')
 
 # =============== Dibuix ===============
@@ -236,19 +263,20 @@ def simulador_gravitacional_ui():
     # Pestanya Evaluacion
     evaluacion_menu = tk.Menu(menu_bar, tearoff=0)
     evaluacion_menu.add_command(label="Nota de la Versió RB1.0", command=mostra_missatge_avaluacio)
-    menu_bar.add_cascade(label="Evaluación", menu=evaluacion_menu)
+    menu_bar.add_cascade(label="Evaluació", menu=evaluacion_menu)
 
     # Pestanya Cuerpos
     cuerpos_menu = tk.Menu(menu_bar, tearoff=0)
-    cuerpos_menu.add_command(label="Crear cuerpo", command=lambda: finestra_crear_cos(win, ax, canvas))
-    cuerpos_menu.add_command(label="Editar cuerpo", command=obrir_editor_de_cossos)
+    cuerpos_menu.add_command(label="Crear cos", command=lambda: finestra_crear_cos(win, ax, canvas))
+    cuerpos_menu.add_command(label="Editar cos", command=obrir_editor_de_cossos)
     cuerpos_menu.add_command(label="Recarregar cossos editats", command=lambda: recarregar_cossos_editats(ax, canvas))
-    menu_bar.add_cascade(label="Cuerpos", menu=cuerpos_menu)
+    menu_bar.add_cascade(label="Cossos", menu=cuerpos_menu)
 
     # Pestanya Ayuda
     ayuda_menu = tk.Menu(menu_bar, tearoff=0)
     ayuda_menu.add_command(label="Instruccions", command=mostrar_instruccions)
-    menu_bar.add_cascade(label="Ayuda", menu=ayuda_menu)
+    ayuda_menu.add_command(label="Crèdits", command=mostrar_credits)
+    menu_bar.add_cascade(label="Ajuda", menu=ayuda_menu)
 
 
     frame_principal = ttk.Frame(win)
@@ -271,9 +299,9 @@ def simulador_gravitacional_ui():
     frame_controls = ttk.Frame(frame_principal, padding=15)
     frame_controls.pack(side='right', fill='y')
 
-    ttk.Button(frame_controls, text="Crear Cuerpo", command=lambda: finestra_crear_cos(win, ax, canvas)).pack(pady=10, fill='x')
+    ttk.Button(frame_controls, text="Crear cos", command=lambda: finestra_crear_cos(win, ax, canvas)).pack(pady=10, fill='x')
 
-    ttk.Label(frame_controls, text="Color del fondo galáctico:").pack(anchor='w', pady=(20, 5))
+    ttk.Label(frame_controls, text="Color del fons galàctic:").pack(anchor='w', pady=(20, 5))
     btn_color_fons = tk.Button(frame_controls, bg=color_fons, width=3, command=lambda: canvia_color_fons(btn_color_fons, ax, canvas, fig, frame_canvas))
     btn_color_fons.pack(anchor='w')
 
@@ -288,7 +316,7 @@ def simulador_gravitacional_ui():
             dibuixa_tots_els_cossos(ax, canvas)
 
     # === Control de velocitat temporal ===
-    ttk.Label(frame_controls, text="Velocidad temporal:").pack(anchor='w', pady=(20, 5))
+    ttk.Label(frame_controls, text="Velocitat temporal:").pack(anchor='w', pady=(20, 5))
 
     velocitat_frame = ttk.Frame(frame_controls)
     velocitat_frame.pack(anchor='w', pady=(0, 10))
@@ -324,7 +352,7 @@ def simulador_gravitacional_ui():
     velocitat_entry.bind("<Return>", entrada_manual)
 
     # === Control de constant gravitatòria G ===
-    ttk.Label(frame_controls, text="Constante gravitatoria (G):").pack(anchor='w', pady=(20, 5))
+    ttk.Label(frame_controls, text="Constant gravitatòria (G):").pack(anchor='w', pady=(20, 5))
 
     G_frame = ttk.Frame(frame_controls)
     G_frame.pack(anchor='w', pady=(0, 10))
@@ -366,7 +394,7 @@ def simulador_gravitacional_ui():
     ttk.Button(frame_botons, text="Inicia", bootstyle="success", command=lambda: iniciar_simulacio(ax, canvas, win)).pack(side='left', padx=5)
     ttk.Button(frame_botons, text="Pausa", bootstyle="warning", command=pausar_simulacio).pack(side='left', padx=5)
     ttk.Button(frame_botons, text="Reset", bootstyle="secondary", command=lambda: reiniciar_simulacio(ax, canvas)).pack(side='left', padx=5)
-    ttk.Button(frame_botons, text="Termina", bootstyle="danger", command=lambda: tancar_totes_les_finstres_i_sortir(win)).pack(side='left', padx=5)
+    ttk.Button(frame_botons, text="Acaba", bootstyle="danger", command=lambda: tancar_totes_les_finstres_i_sortir(win)).pack(side='left', padx=5)
 
     win.mainloop()
 
@@ -391,7 +419,7 @@ def reiniciar_simulacio(ax, canvas):
 def finestra_crear_cos(master, ax=None, canvas=None):
     finestra = tk.Toplevel(master)
     finestres_obertes.append(finestra)
-    finestra.title("Crear Cuerpo")
+    finestra.title("Crear Cos")
     finestra.geometry("500x700")
     finestra.configure(bg='black')
 
@@ -474,7 +502,7 @@ def finestra_crear_cos(master, ax=None, canvas=None):
     color.trace_add('write', actualitza_preview)
     actualitza_preview()
 
-    for text, var in [("Tamaño:", mida), ("Masa:", massa)]:
+    for text, var in [("Mida:", mida), ("Massa:", massa)]:
         etiqueta(text).pack(anchor='w', padx=10, pady=(10, 0))
         ttk.Entry(finestra, textvariable=var).pack(fill='x', padx=10)
 
@@ -486,7 +514,7 @@ def finestra_crear_cos(master, ax=None, canvas=None):
     mostra_color.pack(side='left', padx=5)
     ttk.Button(color_frame, text="...", width=3, command=seleccionar_color).pack(side='left')
 
-    for nom, vx, vy in [("Posición", pos_x, pos_y), ("Velocidad", vel_x, vel_y)]:
+    for nom, vx, vy in [("Posició", pos_x, pos_y), ("Velocitat", vel_x, vel_y)]:
         marc = ttk.LabelFrame(finestra, text=nom, padding=10)
         marc.pack(fill='x', padx=10, pady=10)
         ttk.Label(marc, text="X:").grid(row=0, column=0)
@@ -496,10 +524,10 @@ def finestra_crear_cos(master, ax=None, canvas=None):
 
     boto_frame = ttk.Frame(finestra)
     boto_frame.pack(pady=15)
-    ttk.Button(boto_frame, text="Crear Aleatorio", bootstyle="info", command=crear_i_afegir_cos_aleatori).pack(side='left', padx=5)
-    ttk.Button(boto_frame, text="Aceptar", bootstyle="success", command=acceptar).pack(side='left', padx=5)
-    ttk.Button(boto_frame, text="Salir", bootstyle="danger", command=lambda: [finestres_obertes.remove(finestra), finestra.destroy()]).pack(side='left', padx=5)
-    ttk.Button(boto_frame, text="Crear 10 aleatorios", bootstyle="info", command=crear_deu_cossos_aleatoris).pack(side='left', padx=5)
+    ttk.Button(boto_frame, text="Crear Aleatori", bootstyle="info", command=crear_i_afegir_cos_aleatori).pack(side='left', padx=5)
+    ttk.Button(boto_frame, text="Acceptar", bootstyle="success", command=acceptar).pack(side='left', padx=5)
+    ttk.Button(boto_frame, text="Sortir", bootstyle="danger", command=lambda: [finestres_obertes.remove(finestra), finestra.destroy()]).pack(side='left', padx=5)
+    ttk.Button(boto_frame, text="Crear 10 aleatoris", bootstyle="info", command=crear_deu_cossos_aleatoris).pack(side='left', padx=5)
 
 
 if __name__ == "__main__":
