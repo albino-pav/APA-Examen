@@ -65,6 +65,7 @@ class Simulador:
         self.crear_widgets()
         self.iniciar_pygame()
         self.root.after(1000 // self.fps, self.bucle)
+        self.root.protocol("WM_DELETE_WINDOW", self.terminar_programa)
         self.root.mainloop()
 
     def crear_widgets(self):
@@ -76,7 +77,7 @@ class Simulador:
         ctk.CTkButton(marco_botones, text="INICIAR", command=self.iniciar_simulacion).pack(pady=5)
         ctk.CTkButton(marco_botones, text="REINICIAR", command=self.reiniciar_simulacion).pack(pady=5)
         ctk.CTkButton(marco_botones, text="RESET", command=self.resetear).pack(pady=5)
-        ctk.CTkButton(marco_botones, text="TERMINAR", command=self.root.destroy).pack(pady=5)
+        ctk.CTkButton(marco_botones, text="TERMINAR", command=self.terminar_programa).pack(pady=5)
 
         ctk.CTkLabel(marco_botones, text="Constante G:").pack(pady=2)
         self.slider_G = ctk.CTkSlider(marco_botones, from_=0.01, to=10.0, number_of_steps=100, command=self.actualizar_G)
@@ -126,8 +127,6 @@ class Simulador:
                     dx = cuerpo2.posicion[0] - cuerpo1.posicion[0]
                     dy = cuerpo2.posicion[1] - cuerpo1.posicion[1]
                     distancia = math.sqrt(dx**2 + dy**2) + 1e-5
-
-                    # Evita atracciones infinites
                     if distancia < (cuerpo1.tamano + cuerpo2.tamano):
                         distancia = cuerpo1.tamano + cuerpo2.tamano
 
@@ -135,7 +134,6 @@ class Simulador:
                     direccion = [dx / distancia, dy / distancia]
                     aceleracion = [fuerza * direccion[0] / cuerpo1.masa, fuerza * direccion[1] / cuerpo1.masa]
 
-                    # Límita l'acceleració per evitar explosions de velocitat
                     max_acc = 10
                     aceleracion[0] = max(-max_acc, min(max_acc, aceleracion[0]))
                     aceleracion[1] = max(-max_acc, min(max_acc, aceleracion[1]))
@@ -168,10 +166,14 @@ class Simulador:
         self.simulando = False
         self.cossos.clear()
 
+    def terminar_programa(self):
+        pygame.quit()
+        self.root.destroy()
+
     def abrir_finestra_cos(self):
         ventana = ctk.CTkToplevel(self.root)
         ventana.title("Crear Cuerpo")
-        ventana.geometry("400x600")
+        ventana.geometry("400x700")
 
         formas = ["círculo", "estrella", "+", "x", "punto"]
         tamanos = list(range(2, 20, 2))
@@ -208,13 +210,29 @@ class Simulador:
         combo_cola.set("30")
         combo_cola.pack(pady=2)
 
+        ctk.CTkLabel(ventana, text="Posición inicial (x y):").pack(pady=2)
+        entrada_posx = ctk.CTkEntry(ventana, placeholder_text="X")
+        entrada_posx.pack(pady=1)
+        entrada_posy = ctk.CTkEntry(ventana, placeholder_text="Y")
+        entrada_posy.pack(pady=1)
+
+        ctk.CTkLabel(ventana, text="Velocidad inicial (vx vy):").pack(pady=2)
+        entrada_velx = ctk.CTkEntry(ventana, placeholder_text="Vx")
+        entrada_velx.pack(pady=1)
+        entrada_vely = ctk.CTkEntry(ventana, placeholder_text="Vy")
+        entrada_vely.pack(pady=1)
+
         def agregar_manual():
             forma = combo_forma.get()
             tamano = int(combo_tamano.get())
             masa = int(combo_masa.get())
             cola = int(combo_cola.get())
-            pos = [random.randint(200, 800), random.randint(200, 600)]
-            vel = [random.uniform(-1, 1), random.uniform(-1, 1)]
+            try:
+                pos = [float(entrada_posx.get()), float(entrada_posy.get())]
+                vel = [float(entrada_velx.get()), float(entrada_vely.get())]
+            except:
+                pos = [random.randint(200, 800), random.randint(200, 600)]
+                vel = [random.uniform(-1, 1), random.uniform(-1, 1)]
             nuevo = CuerpoCeleste(forma, tamano, tuple(color_cuerpo), masa, pos, vel, cola)
             self.cossos.append(nuevo)
 
