@@ -118,7 +118,11 @@ class SimulatorApp:
         """
         Crea los botones de control y sliders de parámetros en el panel lateral.
         """
-        btn_style = {"bootstyle": "primary", "width": 25}
+        btn_style = {"width": 25}  # quitar bootstyle
+
+        for text, cmd, style in botones:
+            b = ttk.Button(self.panel, text=text, command=cmd, bootstyle=style, **btn_style)
+            b.pack(pady=6)
 
         botones = [
             ("▶ Iniciar", self.iniciar, "success"),
