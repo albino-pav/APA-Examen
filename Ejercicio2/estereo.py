@@ -30,7 +30,10 @@ def escribir_encabezado_wave(f, cabecera, nframes, ncanales=1, samplewidth=2):
     cabecera = bytearray(cabecera)
     st.pack_into('<I', cabecera, 4, chunk_size)
     st.pack_into('<H', cabecera, 22, ncanales)
-    st.pack_into('<I', cabecera, 28, 44100 * ncanales * samplewidth)
+    # st.pack_into('<I', cabecera, 28, 44100 * ncanales * samplewidth) # f mostreig no sempre es 44100
+    sample_rate = st.unpack_from('<I', cabecera, 24)[0]
+    nAvgBytesPerSec = sample_rate * ncanales * samplewidth
+    st.pack_into('<I', cabecera, 28, nAvgBytesPerSec)
     st.pack_into('<H', cabecera, 32, ncanales * samplewidth)
     st.pack_into('<I', cabecera, 40, subchunk2size)
     f.write(cabecera)
