@@ -32,6 +32,10 @@ def normalizar_horas(fic_entrada, fic_salida):
         (re.compile(r'\b(\d{1,2}) en punto\b'),
          lambda h: f"{int(h):02d}:00" if 1 <= int(h) <= 12 else f"{h} en punto"),
 
+        # 8 y tres cuartos
+        (re.compile(r'\b(\d{1,2}) y tres cuartos\b'),
+        lambda h: f"{int(h):02d}:45" if int(h) < 24 else f"{h} y tres cuartos"),
+
         # 8 y media
         (re.compile(r'\b(\d{1,2}) y media\b'),
          lambda h: f"{int(h):02d}:30" if 1 <= int(h) <= 12 else f"{h} y media"),
