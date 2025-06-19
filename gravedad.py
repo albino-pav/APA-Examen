@@ -329,7 +329,7 @@ class AñadirCuerpoDialog:
         self.entry_color = ttk.Entry(self.top, width=10)
         self.entry_color.insert(0, "#FFFF64")
         self.entry_color.grid(row=7, column=1, sticky="w", padx=5)
-        btn_color = ttk.Button(self.top, text="🎨", command=self.elegir_color, bootstyle="secondary")
+        btn_color = ttk.Button(self.top, text="🎨", command=self.elegir_color)
         btn_color.grid(row=7, column=1, sticky="e", padx=5)
 
         ttk.Button(self.top, text="Añadir", command=self.añadir).grid(row=9, column=0, pady=10)
