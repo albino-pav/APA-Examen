@@ -120,17 +120,13 @@ class SimulatorApp:
         """
         btn_style = {"width": 25}  # quitar bootstyle
 
-        for text, cmd, style in botones:
-            b = ttk.Button(self.panel, text=text, command=cmd, bootstyle=style, **btn_style)
-            b.pack(pady=6)
-
         botones = [
-            ("▶ Iniciar", self.iniciar, "success"),
-            ("⏸ Pausar", self.pausar, "danger"),
-            ("🔄 Resetear", self.resetear, "info"),
-            ("➕ Añadir cuerpo", self.abrir_añadir_cuerpo, "purple"),
-            ("🎲 Añadir cuerpos aleatorios", self.añadir_varios_cuerpos, "warning"),
-            ("❌ Terminar", self.terminar, "secondary"),
+            ("Iniciar simulación", self.toggle_simulacion, "success"),
+            ("Añadir cuerpo", self.abrir_formulario, "primary"),
+            ("Vaciar sistema", self.vaciar_cuerpos, "danger"),
+            ("Guardar sistema", self.guardar_configuracion, "info"),
+            ("Cargar sistema", self.cargar_configuracion, "info"),
+            ("Salir", self.root.quit, "secondary"),
         ]
 
         for text, cmd, style in botones:
