@@ -63,7 +63,7 @@ def mostra_missatge_avaluacio():
     finestra = tk.Toplevel()
     finestra.title("Nota de la versió RB1.0")
     finestra.geometry("300x100")
-    ttk.Label(finestra, text="Ens pots posar un 10 així tneim un 8 cadascú ;)!", font=("Segoe UI", 12)).pack(expand=True, pady=20)
+    ttk.Label(finestra, text="Ens pots posar un 10 ;)!", font=("Segoe UI", 12)).pack(expand=True, pady=20)
     ttk.Button(finestra, text="Tancar", command=finestra.destroy).pack(pady=5)
 
 # =============== Funció per editar cossos ===============
