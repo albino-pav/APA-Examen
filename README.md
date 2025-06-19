@@ -13,9 +13,8 @@ notas aspiradas tiene que ser igual a 16; y si se realiza entre tres, las suma t
 
 | Nombre completo              | Nota Aspirada |
 | ---------------------------- | ------------- |
-| Fulano Martínez Díaz         | 8             |
-| Mengano Díaz Martínez        | 6             |
-| Zutano de la Rosa Florida    | 4             |
+| Biel Bernal Pratdesaba       | 8             |
+| Ramon Llobet Duch            | 8             |
 
 <span style="color:red">También Importante</span>
 -------------------------------------------------
