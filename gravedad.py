@@ -338,11 +338,11 @@ class AñadirCuerpoDialog:
         self.cola_var = tk.BooleanVar()
         tk.Checkbutton(self.top, text="Cola (trail)", variable=self.cola_var).grid(row=8, columnspan=2, pady=3)
 
-        ttk.Button(self.top, text="Añadir", command=self.añadir)
+        ttk.Button(self.top, text="Añadir", command=self.añadir,"success")
         btn.configure(font=("Arial", 12, "bold"))
         btn.grid(row=9, column=0, pady=10)
         
-        ttk.Button(self.top, text="Cancelar", command=self.añadir)
+        ttk.Button(self.top, text="Cancelar", command=self.añadir,"danger")
         btn.configure(font=("Arial", 12, "bold"))
         btn.grid(row=9, column=0, pady=10)
         
