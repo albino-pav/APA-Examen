@@ -1,0 +1,440 @@
+{
+    "fondo": "#1c096e",
+    "cuerpos": [
+        {
+            "forma": "\u2605 Estrella",
+            "tama\u00f1o": 9,
+            "masa": 3.87,
+            "color": "#bcec31",
+            "posicion": [
+                -15.603493831145101,
+                285.5111417451367
+            ],
+            "velocidad": [
+                1.58,
+                -0.92
+            ],
+            "cola": true
+        },
+        {
+            "forma": "\u25a0 Cuadrado",
+            "tama\u00f1o": 8,
+            "masa": 1.77,
+            "color": "#64257b",
+            "posicion": [
+                -199.9399549907885,
+                -190.3836848054619
+            ],
+            "velocidad": [
+                0.41,
+                -0.49
+            ],
+            "cola": true
+        },
+        {
+            "forma": "\u25cf C\u00edrculo",
+            "tama\u00f1o": 6,
+            "masa": 2.81,
+            "color": "#92cee8",
+            "posicion": [
+                -229.19133148829118,
+                338.47740122443474
+            ],
+            "velocidad": [
+                0.12,
+                1.76
+            ],
+            "cola": false
+        },
+        {
+            "forma": "\u25cf C\u00edrculo",
+            "tama\u00f1o": 9,
+            "masa": 0.69,
+            "color": "#c7188b",
+            "posicion": [
+                -301.80562966860634,
+                -201.51053873569842
+            ],
+            "velocidad": [
+                1.32,
+                -1.34
+            ],
+            "cola": true
+        },
+        {
+            "forma": "\u25a0 Cuadrado",
+            "tama\u00f1o": 5,
+            "masa": 1.76,
+            "color": "#37b741",
+            "posicion": [
+                284.89234916636997,
+                -200.61076052377425
+            ],
+            "velocidad": [
+                -0.14,
+                0.35
+            ],
+            "cola": true
+        },
+        {
+            "forma": "\u2605 Estrella",
+            "tama\u00f1o": 17,
+            "masa": 2.45,
+            "color": "#62b0dc",
+            "posicion": [
+                49.30350318336815,
+                -29.59136729259575
+            ],
+            "velocidad": [
+                -1.67,
+                -1.83
+            ],
+            "cola": true
+        },
+        {
+            "forma": "\u25b2 Tri\u00e1ngulo",
+            "tama\u00f1o": 5,
+            "masa": 3.7,
+            "color": "#0fa5ba",
+            "posicion": [
+                -218.04404277757286,
+                -47.76812563853122
+            ],
+            "velocidad": [
+                -0.04,
+                0.83
+            ],
+            "cola": true
+        },
+        {
+            "forma": "\u25a0 Cuadrado",
+            "tama\u00f1o": 6,
+            "masa": 3.76,
+            "color": "#26c1f4",
+            "posicion": [
+                -193.0122720969468,
+                -131.055254309037
+            ],
+            "velocidad": [
+                -0.87,
+                -0.74
+            ],
+            "cola": true
+        },
+        {
+            "forma": "\u2605 Estrella",
+            "tama\u00f1o": 20,
+            "masa": 4.7,
+            "color": "#19f57f",
+            "posicion": [
+                -133.61169733500134,
+                190.87120242063793
+            ],
+            "velocidad": [
+                -0.88,
+                0.22
+            ],
+            "cola": false
+        },
+        {
+            "forma": "Estrella",
+            "tama\u00f1o": 20,
+            "masa": 1000.0,
+            "color": "#eee1b6",
+            "posicion": [
+                10.568974111501447,
+                -12.025331196898899
+            ],
+            "velocidad": [
+                0.0,
+                0.0
+            ],
+            "cola": false
+        },
+        {
+            "forma": "\u2605 Estrella",
+            "tama\u00f1o": 10,
+            "masa": 1.0,
+            "color": "#6dc0c8",
+            "posicion": [
+                239.6735950845008,
+                92.11796701278001
+            ],
+            "velocidad": [
+                -1.39,
+                -1.31
+            ],
+            "cola": false
+        },
+        {
+            "forma": "\u25a0 Cuadrado",
+            "tama\u00f1o": 18,
+            "masa": 3.54,
+            "color": "#233105",
+            "posicion": [
+                204.84883606856613,
+                294.2827377957939
+            ],
+            "velocidad": [
+                -0.32,
+                1.5
+            ],
+            "cola": false
+        },
+        {
+            "forma": "\u2605 Estrella",
+            "tama\u00f1o": 11,
+            "masa": 2.0,
+            "color": "#a43b8a",
+            "posicion": [
+                -358.4216158458388,
+                54.42234754949072
+            ],
+            "velocidad": [
+                1.25,
+                -1.7
+            ],
+            "cola": true
+        },
+        {
+            "forma": "\u25cf C\u00edrculo",
+            "tama\u00f1o": 20,
+            "masa": 3.8,
+            "color": "#a3a1a8",
+            "posicion": [
+                -310.8668139881712,
+                239.4331082843098
+            ],
+            "velocidad": [
+                -0.76,
+                -1.56
+            ],
+            "cola": true
+        },
+        {
+            "forma": "\u25cf C\u00edrculo",
+            "tama\u00f1o": 18,
+            "masa": 1.97,
+            "color": "#8fe11d",
+            "posicion": [
+                169.21751150736782,
+                -244.62238866116076
+            ],
+            "velocidad": [
+                -1.13,
+                0.54
+            ],
+            "cola": true
+        },
+        {
+            "forma": "\u25b2 Tri\u00e1ngulo",
+            "tama\u00f1o": 14,
+            "masa": 2.18,
+            "color": "#b33c0d",
+            "posicion": [
+                -89.83399911007683,
+                -272.8945895644312
+            ],
+            "velocidad": [
+                1.81,
+                1.89
+            ],
+            "cola": false
+        },
+        {
+            "forma": "\u25b2 Tri\u00e1ngulo",
+            "tama\u00f1o": 15,
+            "masa": 4.12,
+            "color": "#a7383a",
+            "posicion": [
+                391.68200930797275,
+                130.57888002155886
+            ],
+            "velocidad": [
+                -1.45,
+                -0.07
+            ],
+            "cola": false
+        },
+        {
+            "forma": "\u25b2 Tri\u00e1ngulo",
+            "tama\u00f1o": 6,
+            "masa": 1.9,
+            "color": "#ab179d",
+            "posicion": [
+                382.72256765369923,
+                -266.9164085571988
+            ],
+            "velocidad": [
+                0.26,
+                -0.31
+            ],
+            "cola": true
+        },
+        {
+            "forma": "\u2605 Estrella",
+            "tama\u00f1o": 19,
+            "masa": 3.16,
+            "color": "#90dcb2",
+            "posicion": [
+                93.37275636712974,
+                305.3708674319985
+            ],
+            "velocidad": [
+                -1.04,
+                1.03
+            ],
+            "cola": true
+        },
+        {
+            "forma": "\u25a0 Cuadrado",
+            "tama\u00f1o": 10,
+            "masa": 3.01,
+            "color": "#a42bb7",
+            "posicion": [
+                -317.40126637623234,
+                -7.733617511171246
+            ],
+            "velocidad": [
+                0.28,
+                -1.99
+            ],
+            "cola": true
+        },
+        {
+            "forma": "\u25a0 Cuadrado",
+            "tama\u00f1o": 11,
+            "masa": 1.94,
+            "color": "#3703f8",
+            "posicion": [
+                202.76640478954744,
+                -93.62399417265698
+            ],
+            "velocidad": [
+                1.52,
+                0.4
+            ],
+            "cola": false
+        },
+        {
+            "forma": "\u25a0 Cuadrado",
+            "tama\u00f1o": 19,
+            "masa": 1.23,
+            "color": "#d2a745",
+            "posicion": [
+                -255.69995516928225,
+                155.74634952795026
+            ],
+            "velocidad": [
+                1.65,
+                1.83
+            ],
+            "cola": false
+        },
+        {
+            "forma": "\u2605 Estrella",
+            "tama\u00f1o": 16,
+            "masa": 1.27,
+            "color": "#09a9c6",
+            "posicion": [
+                -262.33189376075927,
+                218.11153318593472
+            ],
+            "velocidad": [
+                0.25,
+                0.58
+            ],
+            "cola": true
+        },
+        {
+            "forma": "\u25a0 Cuadrado",
+            "tama\u00f1o": 17,
+            "masa": 3.2,
+            "color": "#c43dbe",
+            "posicion": [
+                248.27896226391374,
+                -98.2502355223856
+            ],
+            "velocidad": [
+                -0.41,
+                1.96
+            ],
+            "cola": true
+        },
+        {
+            "forma": "\u25cf C\u00edrculo",
+            "tama\u00f1o": 13,
+            "masa": 3.92,
+            "color": "#9be5e7",
+            "posicion": [
+                134.41825685451113,
+                -55.96738242883487
+            ],
+            "velocidad": [
+                1.69,
+                1.92
+            ],
+            "cola": true
+        },
+        {
+            "forma": "\u2605 Estrella",
+            "tama\u00f1o": 5,
+            "masa": 1.56,
+            "color": "#867ef2",
+            "posicion": [
+                -131.7179723336568,
+                -327.2867390255479
+            ],
+            "velocidad": [
+                -1.94,
+                -0.94
+            ],
+            "cola": true
+        },
+        {
+            "forma": "\u2605 Estrella",
+            "tama\u00f1o": 16,
+            "masa": 1.43,
+            "color": "#eed360",
+            "posicion": [
+                -140.87101530561358,
+                119.1169739039583
+            ],
+            "velocidad": [
+                1.38,
+                0.47
+            ],
+            "cola": true
+        },
+        {
+            "forma": "\u25cf C\u00edrculo",
+            "tama\u00f1o": 16,
+            "masa": 2.74,
+            "color": "#604521",
+            "posicion": [
+                -309.26149814653155,
+                -301.0030707922786
+            ],
+            "velocidad": [
+                -1.43,
+                -0.61
+            ],
+            "cola": true
+        },
+        {
+            "forma": "\u25b2 Tri\u00e1ngulo",
+            "tama\u00f1o": 18,
+            "masa": 2.8,
+            "color": "#bd0976",
+            "posicion": [
+                -5.10476692130311,
+                23.68943010883919
+            ],
+            "velocidad": [
+                0.22,
+                1.64
+            ],
+            "cola": true
+        }
+    ]
+}

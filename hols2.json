@@ -1,0 +1,80 @@
+{
+    "fondo": null,
+    "cuerpos": [
+        {
+            "forma": "\u25b2 Tri\u00e1ngulo",
+            "tama\u00f1o": 18,
+            "masa": 2.65,
+            "color": "#c8368d",
+            "posicion": [
+                106.15384257898671,
+                -10.988954135446306
+            ],
+            "velocidad": [
+                -1.27,
+                -0.62
+            ],
+            "cola": false
+        },
+        {
+            "forma": "\u25cf C\u00edrculo",
+            "tama\u00f1o": 19,
+            "masa": 0.52,
+            "color": "#09d471",
+            "posicion": [
+                275.96673866426136,
+                221.4511606652096
+            ],
+            "velocidad": [
+                -0.88,
+                -1.25
+            ],
+            "cola": false
+        },
+        {
+            "forma": "\u2605 Estrella",
+            "tama\u00f1o": 18,
+            "masa": 3.98,
+            "color": "#fadb23",
+            "posicion": [
+                227.770658993614,
+                -335.3315424658196
+            ],
+            "velocidad": [
+                -1.39,
+                -1.28
+            ],
+            "cola": true
+        },
+        {
+            "forma": "\u25cf C\u00edrculo",
+            "tama\u00f1o": 10,
+            "masa": 4.13,
+            "color": "#803290",
+            "posicion": [
+                130.7616285601191,
+                -111.6938486029446
+            ],
+            "velocidad": [
+                1.06,
+                -0.05
+            ],
+            "cola": true
+        },
+        {
+            "forma": "\u2605 Estrella",
+            "tama\u00f1o": 13,
+            "masa": 4.75,
+            "color": "#74d787",
+            "posicion": [
+                -319.4346493857262,
+                -77.16434426764022
+            ],
+            "velocidad": [
+                1.41,
+                -1.78
+            ],
+            "cola": true
+        }
+    ]
+}

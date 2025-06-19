@@ -13,9 +13,9 @@ notas aspiradas tiene que ser igual a 16; y si se realiza entre tres, las suma t
 
 | Nombre completo              | Nota Aspirada |
 | ---------------------------- | ------------- |
-| Fulano Martínez Díaz         | 8             |
-| Mengano Díaz Martínez        | 6             |
-| Zutano de la Rosa Florida    | 4             |
+| Núria Rodríguez              | 10            |
+| Ferran Gotarra               | 6             |
+
 
 <span style="color:red">También Importante</span>
 -------------------------------------------------
@@ -33,6 +33,8 @@ Ejercicio 1: Programa de Normalización de Expresiones Horarias (20%)
 - El fichero de entrada y el nombre del fichero de salida tendrán la extensión `.txt` y
   se escogerán usando las funciones gráficas de `TkInter.filedialog`.
 - No se evaluará la calidad de la normalización (ese aspecto se evalúa en APA-T6).
+
+> **Respuesta:** `normaliza.py`
 
 Ejercicio 2: Programa de Manejo de Señales Estéreo (35%)
 --------------------------------------------------------
@@ -57,12 +59,34 @@ Ejercicio 2: Programa de Manejo de Señales Estéreo (35%)
   ser compatible con sus interfaces, de manera que, al susituir el
   `estereo.py` presentado por uno que funcione correctamente, el programa `mono.py` también lo hará.
 
+> **Respuesta:** `mono.py`
+
 Ejercicio 3: Programa de Visualización de Cuerpos Sometidos a Atracción Gravitatoria (45%)
 ---------------------------------------------------------------------------------------------
 
 Realizar un programa de simulación de cuerpos celestes sometidos a la Ley de Gravitación Universal
 de Newton. Como mínimo debe tener las mismas funcionalidades del programa `gravedad.exe` subido a Atenea
 y hacerlo igual o mejor que éste.
+
+> **Respuesta:** `graved.py`en bonito y `gravedad_.py` en básico. 
+> Ambos códidos tienen exactamente las mismas funcionalidades, pero a causa de que la libreria `ttkbootstrap` no funciona siempre correctamente o da algunos problemillas, se ha optado por crear dos versiones del programa.
+
+**Explicación de la aplicación:** 
+
+En la parte de arriba, tiene un menú de opciones: 
+- `Archivo` cuenta con `Guardar` y `Restaurar`. Cómo indican sus nombres, guardan y restauran el estado actual del programa utilizando el formato `json`.
+- `Cuerpos` tiene las funcionalidades `Añadir cuerpo`, `Añadir cuerpo aleatorio` y `Editar cuerpo`.
+- `Evaluación` cuenta con una nota estimada a partir del enunciado proporcionado.
+- `Ayuda` tiene algunos consejos o información sobre el programa. 
+
+A la izquierda, tenemos la pantalla de la simulación en cuestión.
+
+Finalmente, a la derecha tenemos algunos atajos a funcionalidades mencionados anteriormente cómo `añadir cuerpo` y `añadir cuerpo aleatorio`. Además, cuenta con unas barras interactivas dónde te permite cambiar los valores de la constante de gravitación, los fps y el incremento del tiempo. También cuenta con un botón que permite cambiar el fondo de la simulación. 
+
+A la hora de crear un cuerpo, el usuario tiene varios parámetros a completar: forma, tamaño, masa, opción de añadir cola, color, posiciónes x e y, al igual que las velocidades x e y, y el número de cuerpos que desea añadir con estas características. Los parámetros de posición y velodicad tienen la posibilidad de ser "randomizados". 
+
+El fichero `ejemplo.json` contiene un escenario de ejemplo que puedes utilizar para probar el programa. Cómo he comentado antes, se carga des de `Archivo` > `Restaurar` > `ejemplo.json`.
+
 
 Entrega
 -------
