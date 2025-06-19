@@ -118,15 +118,15 @@ class SimulatorApp:
         """
         Crea los botones de control y sliders de parámetros en el panel lateral.
         """
-        btn_style = {"width": 25}  # quitar bootstyle
+        btn_style = {"bootstyle": "primary", "width": 25}
 
         botones = [
-            ("Iniciar simulación", self.toggle_simulacion, "success"),
-            ("Añadir cuerpo", self.abrir_formulario, "primary"),
-            ("Vaciar sistema", self.vaciar_cuerpos, "danger"),
-            ("Guardar sistema", self.guardar_configuracion, "info"),
-            ("Cargar sistema", self.cargar_configuracion, "info"),
-            ("Salir", self.root.quit, "secondary"),
+            ("▶ Iniciar", self.iniciar, "success"),
+            ("⏸ Pausar", self.pausar, "danger"),
+            ("🔄 Resetear", self.resetear, "info"),
+            ("➕ Añadir cuerpo", self.abrir_añadir_cuerpo, "purple"),
+            ("🎲 Añadir cuerpos aleatorios", self.añadir_varios_cuerpos, "warning"),
+            ("❌ Terminar", self.terminar, "secondary"),
         ]
 
         for text, cmd, style in botones:
@@ -185,15 +185,6 @@ class SimulatorApp:
         Pausa la simulación.
         """
         self.running = False; self.mostrar_mensaje("Simulación pausada")
-
-    def toggle_simulacion(self):
-        """
-        Activa o pausa la simulación dependiendo de su estado actual.
-        """
-        if self.running:
-            self.pausar()
-        else:
-            self.iniciar()
         
     def resetear(self):
         """
