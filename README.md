@@ -13,9 +13,8 @@ notas aspiradas tiene que ser igual a 16; y si se realiza entre tres, las suma t
 
 | Nombre completo              | Nota Aspirada |
 | ---------------------------- | ------------- |
-| Fulano Martínez Díaz         | 8             |
-| Mengano Díaz Martínez        | 6             |
-| Zutano de la Rosa Florida    | 4             |
+| Imelda Run Montes Martín     | 8             |
+| Arnau Piñero Masegosa        | 8             |
 
 <span style="color:red">También Importante</span>
 -------------------------------------------------
@@ -63,6 +62,8 @@ Ejercicio 3: Programa de Visualización de Cuerpos Sometidos a Atracción Gravit
 Realizar un programa de simulación de cuerpos celestes sometidos a la Ley de Gravitación Universal
 de Newton. Como mínimo debe tener las mismas funcionalidades del programa `gravedad.exe` subido a Atenea
 y hacerlo igual o mejor que éste.
+
+**El ejecutable `gravedad.exe`se encuentra en la carpete `dist`.**
 
 Entrega
 -------
