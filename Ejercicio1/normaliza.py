@@ -41,22 +41,17 @@ def normalizaHoras(ficText, ficNorm):
             salida.write(linea)
 
 def main():
-    # Ocultar la ventana principal de Tkinter
     Tk().withdraw()
 
-    # Seleccionar el fichero de entrada
     ficText = askopenfilename(title="Selecciona el fichero de entrada", filetypes=[("Ficheros de texto", "*.txt")])
     if not ficText:
         print("No se seleccionó ningún fichero de entrada.")
         return
-
-    # Seleccionar el fichero de salida
     ficNorm = asksaveasfilename(title="Selecciona el fichero de salida", filetypes=[("Ficheros de texto", "*.txt")], defaultextension=".txt")
     if not ficNorm:
         print("No se seleccionó ningún fichero de salida.")
         return
 
-    # Normalizar las expresiones horarias
     normalizaHoras(ficText, ficNorm)
     print(f"Normalización completada. Resultado guardado en: {ficNorm}")
 

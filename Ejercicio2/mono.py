@@ -26,7 +26,7 @@ from tkinter import ttk
 from tkinter.filedialog import askopenfilename
 import os
 import subprocess
-import estereo  # Importamos las funciones de APA-T5
+import estereo 
 
 def seleccionar_fichero():
     """Abre un cuadro de diálogo para seleccionar un fichero."""
@@ -82,11 +82,9 @@ def decodificar_estereo():
     estereo.decEstereo(ficCod, ficEste)
     tk.messagebox.showinfo("Operación completada", f"El fichero estéreo se ha guardado en: {ficEste}")
 
-# Crear la ventana principal
 root = tk.Tk()
 root.title("Manejo de Señales Estéreo")
 
-# Crear el notebook
 notebook = ttk.Notebook(root)
 
 # Pestaña 'Estéreo a Mono'
@@ -115,8 +113,7 @@ frame_descodificar = ttk.Frame(notebook)
 notebook.add(frame_descodificar, text="Descodifica Estéreo")
 ttk.Button(frame_descodificar, text="Descodificar", command=decodificar_estereo).pack(pady=10)
 
-# Mostrar el notebook
+
 notebook.pack(expand=True, fill="both")
 
-# Ejecutar la aplicación
 root.mainloop()
