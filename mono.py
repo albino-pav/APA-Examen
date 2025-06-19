@@ -3,387 +3,268 @@ mono.py
 
 Guillem Perez Sanchez
 QP 2025
+
+Versión corregida y mejorada con análisis de chunks robusto y
+corrección de la lógica de codificación/decodificación.
 """
 import struct
 import tkinter as tk
-from tkinter import ttk, filedialog, messagebox
+from tkinter import filedialog
 import ttkbootstrap as tb
+from ttkbootstrap.dialogs import Messagebox
 
-# Funciones APA T5
+# --- Funciones de Utilidad para WAV ---
+
+def leer_wav(nombre_archivo):
+    """
+    Lee un archivo WAV de forma robusta, parseando los chunks.
+    Devuelve los parámetros de formato, la posición del bloque 'data' y el manejador del archivo.
+    """
+    f = open(nombre_archivo, 'rb')
+    riff, tam_riff, wave = struct.unpack('<4sI4s', f.read(12))
+    if riff != b'RIFF' or wave != b'WAVE':
+        f.close()
+        raise ValueError("El archivo no es un WAVE válido.")
+
+    params = {'canales': None, 'frec_muestreo': None, 'bits_muestra': None, 'tam_datos': None, 'data_offset': None}
+    
+    while True:
+        chunk_id, chunk_size = struct.unpack('<4sI', f.read(8))
+        if chunk_id == b'fmt ':
+            formato, canales, frec, byte_rate, align, bits = struct.unpack('<HHIIHH', f.read(16))
+            params.update({'canales': canales, 'frec_muestreo': frec, 'bits_muestra': bits})
+            if chunk_size > 16: f.seek(chunk_size - 16, 1) # Saltar el resto del chunk si existe
+        elif chunk_id == b'data':
+            params['tam_datos'] = chunk_size
+            params['data_offset'] = f.tell()
+            f.seek(chunk_size, 1) # Dejamos el cursor al final de los datos para la siguiente lectura
+        else:
+            if chunk_size % 2 != 0: chunk_size += 1 # Asegurar alineación
+            f.seek(chunk_size, 1)
+        
+        if f.tell() >= tam_riff + 8:
+            break
+            
+    if not all(params.values()):
+        f.close()
+        raise ValueError("Archivo WAVE incompleto o con formato no reconocido.")
+    
+    return f, params
+
+def escribir_wav(nombre_archivo, datos_muestras, canales, frec, bits):
+    """Escribe los datos de muestra en un nuevo archivo WAV."""
+    with open(nombre_archivo, 'wb') as f:
+        tam_datos = len(datos_muestras)
+        bytes_por_muestra = bits // 8
+        block_align = canales * bytes_por_muestra
+        byte_rate = frec * block_align
+        
+        # Cabecera RIFF y fmt
+        f.write(struct.pack('<4sI4s', b'RIFF', 36 + tam_datos, b'WAVE'))
+        f.write(struct.pack('<4sIHHIIHH', b'fmt ', 16, 1, canales, frec, byte_rate, block_align, bits))
+        
+        # Cabecera data y datos
+        f.write(struct.pack('<4sI', b'data', tam_datos))
+        f.write(datos_muestras)
+
+# --- Lógica de Procesamiento de Audio ---
 
 def estereo2mono(ficEste, ficMono, canal=2):
-    with open(ficEste, 'rb') as fe:
-        cabecera = fe.read(44)
-        if cabecera[22:24] != struct.pack('<H', 2):
-            raise ValueError("El fichero de entrada no es estéreo (2 canales)")
+    fe, params = leer_wav(ficEste)
+    if params['canales'] != 2 or params['bits_muestra'] != 16:
+        fe.close()
+        raise ValueError("El fichero de entrada no es estéreo de 16 bits.")
 
-        tam_muestras = struct.unpack('<I', cabecera[40:44])[0]
-        num_muestras = tam_muestras // 4
-        datos = fe.read(tam_muestras)
-        muestras = struct.unpack('<' + 'hh'*num_muestras, datos)
+    fe.seek(params['data_offset'])
+    datos = fe.read(params['tam_datos'])
+    num_muestras_par = params['tam_datos'] // 4
+    muestras = struct.unpack(f'<{num_muestras_par}hh', datos)
+    fe.close()
 
-        if canal == 0:
-            mono = [muestras[i] for i in range(0, len(muestras), 2)]
-        elif canal == 1:
-            mono = [muestras[i] for i in range(1, len(muestras), 2)]
-        elif canal == 2:
-            mono = [(muestras[i] + muestras[i+1]) // 2 for i in range(0, len(muestras), 2)]
-        elif canal == 3:
-            mono = [(muestras[i] - muestras[i+1]) // 2 for i in range(0, len(muestras), 2)]
-        else:
-            raise ValueError("Parámetro 'canal' no válido (debe ser 0, 1, 2 o 3)")
+    if canal == 0:    # Canal Izquierdo
+        mono = [muestras[i] for i in range(0, len(muestras), 2)]
+    elif canal == 1:  # Canal Derecho
+        mono = [muestras[i] for i in range(1, len(muestras), 2)]
+    elif canal == 2:  # Media (Mid)
+        mono = [(muestras[i] + muestras[i+1]) // 2 for i in range(0, len(muestras), 2)]
+    elif canal == 3:  # Diferencia (Side)
+        mono = [(muestras[i] - muestras[i+1]) // 2 for i in range(0, len(muestras), 2)]
+    else:
+        raise ValueError("Parámetro 'canal' no válido (0, 1, 2 o 3).")
 
-    nuevo_tam_datos = len(mono) * 2
-    nueva_cabecera = bytearray(cabecera)
-    nueva_cabecera[22:24] = struct.pack('<H', 1)
-    nueva_cabecera[32:34] = struct.pack('<H', 2)
-    nueva_cabecera[34:36] = struct.pack('<H', 16)
-    nueva_cabecera[40:44] = struct.pack('<I', nuevo_tam_datos)
-    nueva_cabecera[4:8] = struct.pack('<I', 36 + nuevo_tam_datos)
+    datos_mono = struct.pack(f'<{len(mono)}h', *mono)
+    escribir_wav(ficMono, datos_mono, 1, params['frec_muestreo'], 16)
 
-    with open(ficMono, 'wb') as fm:
-        fm.write(nueva_cabecera)
-        fm.write(struct.pack('<' + 'h'*len(mono), *mono))
 
 def mono2estereo(ficIzq, ficDer, ficEste):
-    with open(ficIzq, 'rb') as fz, open(ficDer, 'rb') as fd:
-        cab_izq = fz.read(44)
-        cab_der = fd.read(44)
+    fz, params_izq = leer_wav(ficIzq)
+    fd, params_der = leer_wav(ficDer)
+    
+    if not (params_izq['canales'] == 1 and params_der['canales'] == 1 and params_izq['bits_muestra'] == 16 and params_der['bits_muestra'] == 16):
+        fz.close(); fd.close()
+        raise ValueError("Ambos ficheros deben ser monofónicos de 16 bits.")
+    if params_izq['tam_datos'] != params_der['tam_datos']:
+        fz.close(); fd.close()
+        raise ValueError("Los ficheros deben tener el mismo número de muestras.")
+    
+    fz.seek(params_izq['data_offset']); datos_izq = fz.read()
+    fd.seek(params_der['data_offset']); datos_der = fd.read()
+    fz.close(); fd.close()
 
-        if cab_izq[22:24] != struct.pack('<H', 1) or cab_der[22:24] != struct.pack('<H', 1):
-            raise ValueError("Ambos ficheros deben ser monofónicos (1 canal)")
+    num_muestras = len(datos_izq) // 2
+    izq = struct.unpack(f'<{num_muestras}h', datos_izq)
+    der = struct.unpack(f'<{num_muestras}h', datos_der)
 
-        datos_izq = fz.read()
-        datos_der = fd.read()
-
-        num_muestras_izq = len(datos_izq) // 2
-        num_muestras_der = len(datos_der) // 2
-
-        if num_muestras_izq != num_muestras_der:
-            raise ValueError("Los ficheros deben tener el mismo número de muestras")
-
-        izq = struct.unpack('<' + 'h'*num_muestras_izq, datos_izq)
-        der = struct.unpack('<' + 'h'*num_muestras_der, datos_der)
-
-    estereo = [val for par in zip(izq, der) for val in par]
-
-    nuevo_tam_datos = len(estereo) * 2
-    nueva_cabecera = bytearray(cab_izq)
-    nueva_cabecera[22:24] = struct.pack('<H', 2)
-    nueva_cabecera[32:34] = struct.pack('<H', 4)
-    nueva_cabecera[34:36] = struct.pack('<H', 16)
-    nueva_cabecera[40:44] = struct.pack('<I', nuevo_tam_datos)
-    nueva_cabecera[4:8] = struct.pack('<I', 36 + nuevo_tam_datos)
-
-    with open(ficEste, 'wb') as fe:
-        fe.write(nueva_cabecera)
-        fe.write(struct.pack('<' + 'h'*len(estereo), *estereo))
-
-import struct
+    estereo_intercalado = [val for par in zip(izq, der) for val in par]
+    datos_estereo = struct.pack(f'<{len(estereo_intercalado)}h', *estereo_intercalado)
+    escribir_wav(ficEste, datos_estereo, 2, params_izq['frec_muestreo'], 16)
 
 def codEstereo(ficEste, ficCod):
-    with open(ficEste, 'rb') as fe:
-        # Leer cabecera RIFF
-        riff, tam, wave = struct.unpack('<4sI4s', fe.read(12))
-        if riff != b'RIFF' or wave != b'WAVE':
-            raise TypeError("Archivo no válido WAVE")
+    fe, params = leer_wav(ficEste)
+    if params['canales'] != 2 or params['bits_muestra'] != 16:
+        fe.close()
+        raise ValueError("El archivo de entrada no es estéreo de 16 bits.")
+    
+    fe.seek(params['data_offset'])
+    datos = fe.read(params['tam_datos'])
+    muestras = struct.unpack(f'<{params["tam_datos"] // 2}h', datos)
+    fe.close()
+    
+    codificadas = [
+        (((l + r) // 2) << 16) | (((l - r) // 2) & 0xFFFF)
+        for l, r in zip(muestras[::2], muestras[1::2])
+    ]
+    
+    datos_cod = struct.pack(f'<{len(codificadas)}i', *codificadas) # 'i' para entero con signo de 32 bits
+    escribir_wav(ficCod, datos_cod, 1, params['frec_muestreo'], 32)
 
-        canales = None
-        frec_muestreo = None
-        bits_muestra = None
-        desplazamiento = None
-        tam_datos = None
-
-        while True:
-            subchunk = fe.read(8)
-            if len(subchunk) < 8:
-                break
-            ident, tam_subchunk = struct.unpack('<4sI', subchunk)
-            if ident == b'fmt ':
-                fmt = fe.read(tam_subchunk)
-                formato, canales, frec_muestreo, _, _, bits_muestra = struct.unpack('<HHIIHH', fmt[:16])
-            elif ident == b'data':
-                desplazamiento = fe.tell()
-                tam_datos = tam_subchunk
-                fe.seek(tam_subchunk, 1)
-            else:
-                fe.seek(tam_subchunk, 1)
-
-        if canales != 2 or bits_muestra != 16:
-            raise ValueError("El archivo no es estéreo de 16 bits")
-
-        # Leer datos
-        fe.seek(desplazamiento)
-        datos = fe.read(tam_datos)
-        muestras = struct.unpack('<' + 'hh' * (tam_datos // 4), datos)
-
-        codificadas = [((l + r) << 16) | ((l - r) & 0xFFFF)
-                       for l, r in zip(muestras[::2], muestras[1::2])]
-        
-        datos_cod = struct.pack('<' + 'I' * len(codificadas), *codificadas)
-        tam_cod = len(datos_cod)
-        bloque = 4
-        tasa = frec_muestreo * bloque
-
-        # Crear cabecera mono 32 bits
-        cabecera = (
-            struct.pack('4sI4s', b'RIFF', 36 + tam_cod, b'WAVE') +
-            struct.pack('<4sIHHIIHH', b'fmt ', 16, 1, 1, frec_muestreo,
-                        tasa, bloque, 32) +
-            struct.pack('<4sI', b'data', tam_cod)
-        )
-
-    with open(ficCod, 'wb') as fc:
-        fc.write(cabecera)
-        fc.write(datos_cod)
 
 def decEstereo(ficCod, ficEste):
-    with open(ficCod, 'rb') as fc:
-        # Leer cabecera RIFF
-        riff, tam, wave = struct.unpack('<4sI4s', fc.read(12))
-        if riff != b'RIFF' or wave != b'WAVE':
-            raise TypeError("Archivo no válido WAVE")
+    fc, params = leer_wav(ficCod)
+    if params['canales'] != 1 or params['bits_muestra'] != 32:
+        fc.close()
+        raise ValueError("El archivo de entrada no es mono de 32 bits.")
+        
+    fc.seek(params['data_offset'])
+    datos_cod = fc.read(params['tam_datos'])
+    codificados = struct.unpack(f'<{params["tam_datos"] // 4}i', datos_cod)
+    fc.close()
 
-        canales = None
-        frec_muestreo = None
-        bits_muestra = None
-        desplazamiento = None
-        tam_datos = None
+    muestras_dec = []
+    for cod in codificados:
+        mid = cod >> 16
+        side = struct.unpack('<h', struct.pack('<h', cod & 0xFFFF))[0] # Recupera el signo de 'side'
+        
+        l = mid + side
+        r = mid - side
+        muestras_dec.extend([l, r])
 
-        while True:
-            subchunk = fc.read(8)
-            if len(subchunk) < 8:
-                break
-            ident, tam_subchunk = struct.unpack('<4sI', subchunk)
-            if ident == b'fmt ':
-                fmt = fc.read(tam_subchunk)
-                formato, canales, frec_muestreo, _, _, bits_muestra = struct.unpack('<HHIIHH', fmt[:16])
-            elif ident == b'data':
-                desplazamiento = fc.tell()
-                tam_datos = tam_subchunk
-                fc.seek(tam_subchunk, 1)
-            else:
-                fc.seek(tam_subchunk, 1)
+    datos_est = struct.pack(f'<{len(muestras_dec)}h', *muestras_dec)
+    escribir_wav(ficEste, datos_est, 2, params['frec_muestreo'], 16)
 
-        if canales != 1 or bits_muestra != 32:
-            raise ValueError("El archivo no es mono de 32 bits")
-
-        # Leer datos
-        fc.seek(desplazamiento)
-        datos = fc.read(tam_datos)
-        codificados = struct.unpack('<' + 'I' * (tam_datos // 4), datos)
-
-        muestras = []
-        for cod in codificados:
-            suma = (cod >> 16) & 0xFFFF
-            dif = cod & 0xFFFF
-            suma = struct.unpack('<h', struct.pack('<H', suma))[0]
-            dif = struct.unpack('<h', struct.pack('<H', dif))[0]
-            l = suma + dif
-            r = suma - dif
-            muestras.extend([l, r])
-
-        datos_est = struct.pack('<' + 'h' * len(muestras), *muestras)
-        tam_est = len(datos_est)
-        bloque = 4
-        tasa = frec_muestreo * bloque
-
-        # Crear cabecera estéreo 16 bits
-        cabecera = (
-            struct.pack('4sI4s', b'RIFF', 36 + tam_est, b'WAVE') +
-            struct.pack('<4sIHHIIHH', b'fmt ', 16, 1, 2, frec_muestreo,
-                        tasa, bloque, 16) +
-            struct.pack('<4sI', b'data', tam_est)
-        )
-
-    with open(ficEste, 'wb') as fe:
-        fe.write(cabecera)
-        fe.write(datos_est)
-
-
-# Diseño interfaz gráfica con TkInter
+# --- Interfaz Gráfica ---
 
 class Aplicacion:
     def __init__(self, root):
         self.root = root
-        self.root.title("Conversor de Audio Estéreo/Mono")
+        self.root.title("Conversor de Audio WAV")
+        self.root.geometry("600x250")
 
-        notebook = ttk.Notebook(root)
-        notebook.pack(fill='both', expand=True)
+        notebook = tb.Notebook(root)
+        notebook.pack(pady=10, padx=10, fill="both", expand=True)
 
         self.crear_pestana_estereo_a_mono(notebook)
         self.crear_pestana_mono_a_estereo(notebook)
         self.crear_pestana_codifica_estereo(notebook)
         self.crear_pestana_decodifica_estereo(notebook)
 
+    def _crear_fila_archivo(self, parent, etiqueta_texto, es_guardar=False):
+        frame = tb.Frame(parent)
+        tb.Label(frame, text=etiqueta_texto, width=25).pack(side="left", padx=5)
+        entry = tb.Entry(frame, width=40)
+        entry.pack(side="left", fill="x", expand=True, padx=5)
+        
+        def seleccionar():
+            if es_guardar:
+                path = filedialog.asksaveasfilename(defaultextension=".wav", filetypes=[("WAV files", "*.wav")])
+            else:
+                path = filedialog.askopenfilename(filetypes=[("WAV files", "*.wav")])
+            if path:
+                entry.delete(0, "end")
+                entry.insert(0, path)
 
-# Diseño pestañas:
+        btn_text = "Guardar como..." if es_guardar else "Seleccionar"
+        tb.Button(frame, text=btn_text, command=seleccionar, bootstyle="outline").pack(side="left", padx=5)
+        frame.pack(fill="x", pady=5)
+        return entry
     
-    # Pestaña Estereo a Mono
+    def _ejecutar_conversion(self, funcion, *args):
+        try:
+            # Validar que las rutas no estén vacías
+            for arg in args:
+                if not arg:
+                    Messagebox.show_warning("Por favor, especifique todas las rutas de archivo.", "Ruta Faltante")
+                    return
+            
+            funcion(*args)
+            Messagebox.show_info("Conversión completada con éxito.", "Éxito")
+        except Exception as e:
+            Messagebox.show_error(f"Se produjo un error:\n{e}", "Error")
+
     def crear_pestana_estereo_a_mono(self, notebook):
-        frame = ttk.Frame(notebook)
+        frame = tb.Frame(notebook, padding=10)
         notebook.add(frame, text="Estéreo a Mono")
+        
+        self.entrada_este = self._crear_fila_archivo(frame, "Archivo estéreo de entrada:")
+        self.salida_mono = self._crear_fila_archivo(frame, "Archivo mono de salida:", es_guardar=True)
 
-        ttk.Label(frame, text="Archivo estéreo:").grid(row=0, column=0, sticky='w')
-        self.entrada_este = ttk.Entry(frame, width=50)
-        self.entrada_este.grid(row=0, column=1)
-        ttk.Button(frame, text="Seleccionar", command=self.sel_estereo).grid(row=0, column=2)
-
-        ttk.Label(frame, text="Canal (0=Izq, 1=Der, 2=Med, 3=Dif):").grid(row=1, column=0, sticky='w')
-        self.canal = ttk.Combobox(frame, values=["0", "1", "2", "3"])
+        # Selector de canal
+        combo_frame = tb.Frame(frame)
+        tb.Label(combo_frame, text="Canal a extraer:", width=25).pack(side="left", padx=5)
+        self.canal = tb.Combobox(combo_frame, values=["0: Izquierdo", "1: Derecho", "2: Medio (L+R)/2", "3: Diferencia (L-R)/2"], state="readonly")
         self.canal.current(2)
-        self.canal.grid(row=1, column=1)
+        self.canal.pack(side="left", padx=5, fill="x", expand=True)
+        combo_frame.pack(fill="x", pady=5)
+        
+        tb.Button(frame, text="Convertir", bootstyle="success", command=lambda: 
+            self._ejecutar_conversion(estereo2mono, self.entrada_este.get(), self.salida_mono.get(), int(self.canal.get().split(':')[0]))
+        ).pack(pady=15)
 
-        ttk.Button(frame, text="Guardar como...", command=self.guardar_mono).grid(row=2, column=0)
-        self.salida_mono = ttk.Entry(frame, width=50)
-        self.salida_mono.grid(row=2, column=1)
-
-        ttk.Button(frame, text="Convertir", command=self.convertir_estereo_a_mono).grid(row=3, column=1, pady=10)
-
-    def sel_estereo(self):
-        archivo = filedialog.askopenfilename(filetypes=[("WAV files", "*.wav")])
-        if archivo:
-            self.entrada_este.delete(0, tk.END)
-            self.entrada_este.insert(0, archivo)
-
-    def guardar_mono(self):
-        archivo = filedialog.asksaveasfilename(defaultextension=".wav", filetypes=[("WAV files", "*.wav")])
-        if archivo:
-            self.salida_mono.delete(0, tk.END)
-            self.salida_mono.insert(0, archivo)
-
-    def convertir_estereo_a_mono(self):
-        try:
-            estereo2mono(
-                self.entrada_este.get(),
-                self.salida_mono.get(),
-                int(self.canal.get())
-            )
-            messagebox.showinfo("Éxito", "Conversión completada correctamente.")
-        except Exception as e:
-            messagebox.showerror("Error", str(e))
-
-    # Pestaña Mono a Estéreo
     def crear_pestana_mono_a_estereo(self, notebook):
-        frame = ttk.Frame(notebook)
+        frame = tb.Frame(notebook, padding=10)
         notebook.add(frame, text="Mono a Estéreo")
+        
+        self.entrada_izq = self._crear_fila_archivo(frame, "Archivo canal izquierdo (L):")
+        self.entrada_der = self._crear_fila_archivo(frame, "Archivo canal derecho (R):")
+        self.salida_estereo = self._crear_fila_archivo(frame, "Archivo estéreo de salida:", es_guardar=True)
+        
+        tb.Button(frame, text="Convertir", bootstyle="success", command=lambda: 
+            self._ejecutar_conversion(mono2estereo, self.entrada_izq.get(), self.entrada_der.get(), self.salida_estereo.get())
+        ).pack(pady=15)
 
-        ttk.Label(frame, text="Archivo canal izquierdo:").grid(row=0, column=0, sticky='w')
-        self.entrada_izq = ttk.Entry(frame, width=50)
-        self.entrada_izq.grid(row=0, column=1)
-        ttk.Button(frame, text="Seleccionar", command=self.sel_izq).grid(row=0, column=2)
-
-        ttk.Label(frame, text="Archivo canal derecho:").grid(row=1, column=0, sticky='w')
-        self.entrada_der = ttk.Entry(frame, width=50)
-        self.entrada_der.grid(row=1, column=1)
-        ttk.Button(frame, text="Seleccionar", command=self.sel_der).grid(row=1, column=2)
-
-        ttk.Button(frame, text="Guardar como...", command=self.guardar_estereo).grid(row=2, column=0)
-        self.salida_estereo = ttk.Entry(frame, width=50)
-        self.salida_estereo.grid(row=2, column=1)
-
-        ttk.Button(frame, text="Convertir", command=self.convertir_mono_a_estereo).grid(row=3, column=1, pady=10)
-
-    def sel_izq(self):
-        archivo = filedialog.askopenfilename(filetypes=[("WAV files", "*.wav")])
-        if archivo:
-            self.entrada_izq.delete(0, tk.END)
-            self.entrada_izq.insert(0, archivo)
-
-    def sel_der(self):
-        archivo = filedialog.askopenfilename(filetypes=[("WAV files", "*.wav")])
-        if archivo:
-            self.entrada_der.delete(0, tk.END)
-            self.entrada_der.insert(0, archivo)
-
-    def guardar_estereo(self):
-        archivo = filedialog.asksaveasfilename(defaultextension=".wav", filetypes=[("WAV files", "*.wav")])
-        if archivo:
-            self.salida_estereo.delete(0, tk.END)
-            self.salida_estereo.insert(0, archivo)
-
-    def convertir_mono_a_estereo(self):
-        try:
-            mono2estereo(
-                self.entrada_izq.get(),
-                self.entrada_der.get(),
-                self.salida_estereo.get()
-            )
-            messagebox.showinfo("Éxito", "Conversión completada correctamente.")
-        except Exception as e:
-            messagebox.showerror("Error", str(e))
-
-    # Pestaña Codifica Estéreo
     def crear_pestana_codifica_estereo(self, notebook):
-        frame = ttk.Frame(notebook)
-        notebook.add(frame, text="Codificar Estéreo")
+        frame = tb.Frame(notebook, padding=10)
+        notebook.add(frame, text="Codificar Estéreo (M/S)")
+        
+        self.entrada_cod = self._crear_fila_archivo(frame, "Archivo estéreo de entrada:")
+        self.salida_cod = self._crear_fila_archivo(frame, "Archivo codificado de salida:", es_guardar=True)
+        
+        tb.Button(frame, text="Codificar", bootstyle="success", command=lambda: 
+            self._ejecutar_conversion(codEstereo, self.entrada_cod.get(), self.salida_cod.get())
+        ).pack(pady=15)
 
-        ttk.Label(frame, text="Archivo estéreo:").grid(row=0, column=0, sticky='w')
-        self.entrada_cod = ttk.Entry(frame, width=50)
-        self.entrada_cod.grid(row=0, column=1)
-        ttk.Button(frame, text="Seleccionar", command=self.sel_cod_entrada).grid(row=0, column=2)
-
-        ttk.Button(frame, text="Guardar como...", command=self.guardar_cod).grid(row=1, column=0)
-        self.salida_cod = ttk.Entry(frame, width=50)
-        self.salida_cod.grid(row=1, column=1)
-
-        ttk.Button(frame, text="Codificar", command=self.codificar_estereo).grid(row=2, column=1, pady=10)
-
-    def sel_cod_entrada(self):
-        archivo = filedialog.askopenfilename(filetypes=[("WAV files", "*.wav")])
-        if archivo:
-            self.entrada_cod.delete(0, tk.END)
-            self.entrada_cod.insert(0, archivo)
-    
-    def guardar_cod(self):
-        archivo = filedialog.asksaveasfilename(defaultextension=".wav", filetypes=[("WAV files", "*.wav")])
-        if archivo:
-            self.salida_cod.delete(0, tk.END)
-            self.salida_cod.insert(0, archivo)
-
-    def codificar_estereo(self):
-        try:
-            codEstereo(self.entrada_cod.get(), self.salida_cod.get())
-            messagebox.showinfo("Éxito", "Codificación completada correctamente.")
-        except Exception as e:
-            messagebox.showerror("Error", str(e))
-
-    # Pestaña Descodifica Estéreo
     def crear_pestana_decodifica_estereo(self, notebook):
-        frame = ttk.Frame(notebook)
-        notebook.add(frame, text="Decodificar Estéreo")
+        frame = tb.Frame(notebook, padding=10)
+        notebook.add(frame, text="Decodificar Estéreo (M/S)")
 
-        ttk.Label(frame, text="Archivo codificado:").grid(row=0, column=0, sticky='w')
-        self.entrada_dec = ttk.Entry(frame, width=50)
-        self.entrada_dec.grid(row=0, column=1)
-        ttk.Button(frame, text="Seleccionar", command=self.sel_dec_entrada).grid(row=0, column=2)
-
-        ttk.Button(frame, text="Guardar como...", command=self.guardar_dec).grid(row=1, column=0)
-        self.salida_dec = ttk.Entry(frame, width=50)
-        self.salida_dec.grid(row=1, column=1)
-
-        ttk.Button(frame, text="Decodificar", command=self.decodificar_estereo).grid(row=2, column=1, pady=10)
-
-    def sel_dec_entrada(self):
-        archivo = filedialog.askopenfilename(filetypes=[("WAV files", "*.wav")])
-        if archivo:
-            self.entrada_dec.delete(0, tk.END)
-            self.entrada_dec.insert(0, archivo)
-
-    def guardar_dec(self):
-        archivo = filedialog.asksaveasfilename(defaultextension=".wav", filetypes=[("WAV files", "*.wav")])
-        if archivo:
-            self.salida_dec.delete(0, tk.END)
-            self.salida_dec.insert(0, archivo)
-
-    def decodificar_estereo(self):
-        try:
-            decEstereo(self.entrada_dec.get(), self.salida_dec.get())
-            messagebox.showinfo("Éxito", "Decodificación completada correctamente.")
-        except Exception as e:
-            messagebox.showerror("Error", str(e))
+        self.entrada_dec = self._crear_fila_archivo(frame, "Archivo codificado de entrada:")
+        self.salida_dec = self._crear_fila_archivo(frame, "Archivo estéreo de salida:", es_guardar=True)
+        
+        tb.Button(frame, text="Decodificar", bootstyle="success", command=lambda: 
+            self._ejecutar_conversion(decEstereo, self.entrada_dec.get(), self.salida_dec.get())
+        ).pack(pady=15)
 
 if __name__ == "__main__":
-    app = tb.Window(themename="minty")
-    Aplicacion(app)
-    app.mainloop()
+    app_root = tb.Window(themename="minty")
+    Aplicacion(app_root)
+    app_root.mainloop()
