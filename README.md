@@ -63,6 +63,8 @@ Realizar un programa de simulación de cuerpos celestes sometidos a la Ley de Gr
 de Newton. Como mínimo debe tener las mismas funcionalidades del programa `gravedad.exe` subido a Atenea
 y hacerlo igual o mejor que éste.
 
+**El ejecutable `gravedad.exe`se encuentra en la carpete `dist`.**
+
 Entrega
 -------
 
