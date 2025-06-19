@@ -13,9 +13,9 @@ notas aspiradas tiene que ser igual a 16; y si se realiza entre tres, las suma t
 
 | Nombre completo              | Nota Aspirada |
 | ---------------------------- | ------------- |
-| Fulano Martínez Díaz         | 8             |
-| Mengano Díaz Martínez        | 6             |
-| Zutano de la Rosa Florida    | 4             |
+| Montserrat Cuevas López      | 10            |
+|                              |               |
+|                              |               |
 
 <span style="color:red">También Importante</span>
 -------------------------------------------------
@@ -33,6 +33,15 @@ Ejercicio 1: Programa de Normalización de Expresiones Horarias (20%)
 - El fichero de entrada y el nombre del fichero de salida tendrán la extensión `.txt` y
   se escogerán usando las funciones gráficas de `TkInter.filedialog`.
 - No se evaluará la calidad de la normalización (ese aspecto se evalúa en APA-T6).
+
+#### Ventanas para escoger y guardar el fichero:
+
+![alt text](image-2.png)
+![alt text](image-1.png)
+
+#### Salida en la terminal:
+
+![alt text](image.png)
 
 Ejercicio 2: Programa de Manejo de Señales Estéreo (35%)
 --------------------------------------------------------
@@ -57,12 +66,41 @@ Ejercicio 2: Programa de Manejo de Señales Estéreo (35%)
   ser compatible con sus interfaces, de manera que, al susituir el
   `estereo.py` presentado por uno que funcione correctamente, el programa `mono.py` también lo hará.
 
+  #### Visualización de las ventanas:
+
+  ![alt text](image-4.png) ![alt text](image-3.png)
+
 Ejercicio 3: Programa de Visualización de Cuerpos Sometidos a Atracción Gravitatoria (45%)
 ---------------------------------------------------------------------------------------------
 
 Realizar un programa de simulación de cuerpos celestes sometidos a la Ley de Gravitación Universal
 de Newton. Como mínimo debe tener las mismas funcionalidades del programa `gravedad.exe` subido a Atenea
 y hacerlo igual o mejor que éste.
+
+#### Código:
+
+Disponible en `gravedad.py`.
+
+#### ¿Qué hace el código? 
+
+Aparte de las funcionalidades del programa "gravedad.exe". Este puede:
+
+- Cargar y guardar una constelación de cuerpos desde un archivo JSON.
+
+- Editar los parámetros de un cuerpo.
+
+- Añadir cuerpos aleatorios mediante un botón en el que vas clicando y se añade un nuevo cuerpo aleatorio. Se ha considerado que es más eficiente esta opción que la de añadir directamente x cuerpos aleatorios. 
+
+- Empezar la simulación con el botón iniciar, en el otro caso empezaba directamente tan solo añadiendo cuerpos. Como programa nos deja añadir cuerpos mientras se inicia la simulación, se ha pensado que es una buena opción poder iniciar después de haber creado los cuerpos que uno quiere.
+
+- Al parar la simulación puedes clicar encima de un cuerpo y ver sus datos.
+
+![alt text](image-7.png)
+
+- Si la masa del cuerpo es igual o más grande de 70 se crea un agujero negro. Al iniciar la simulación se cambia el color de este al negro y cada que un cuerpo se acerca a él este lo absorbe, haciendo que dicho cuerpo desaparezca y el agujero negro aumente en masa.
+
+![alt text](image-5.png)
+
 
 Entrega
 -------
