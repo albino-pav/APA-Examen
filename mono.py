@@ -1,3 +1,8 @@
+"""
+Maria Freixas Solé
+mono.py
+"""
+
 import numpy as np
 import struct as st
 import threading
