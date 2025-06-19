@@ -342,7 +342,7 @@ class AñadirCuerpoDialog:
         btn.configure(font=("Arial", 12, "bold"))
         btn.grid(row=9, column=0, pady=10)
         
-        ttk.Button(self.top, text="Cancelar", command=self.añadir,"danger")
+        ttk.Button(self.top, text="Cancelar", command=self.top.destroy,"danger")
         btn.configure(font=("Arial", 12, "bold"))
         btn.grid(row=9, column=0, pady=10)
         
