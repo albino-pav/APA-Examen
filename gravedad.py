@@ -185,6 +185,15 @@ class SimulatorApp:
         Pausa la simulación.
         """
         self.running = False; self.mostrar_mensaje("Simulación pausada")
+
+    def toggle_simulacion(self):
+        """
+        Activa o pausa la simulación dependiendo de su estado actual.
+        """
+        if self.running:
+            self.pausar()
+        else:
+            self.iniciar()
         
     def resetear(self):
         """
