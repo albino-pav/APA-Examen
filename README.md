@@ -4,7 +4,7 @@ Algorismia i Programació Audiovisual
 Examen Final - Primavera de 2025
 --------------------------------
 
-<span style="color:red">Importante</span>
+<span style="color:red">Importante</span> 
 -----------------------------------------
 
 Rellene la tabla siguiente con los nombres completos y la nota aspirada de cada participante. Recuerde que
@@ -13,9 +13,8 @@ notas aspiradas tiene que ser igual a 16; y si se realiza entre tres, las suma t
 
 | Nombre completo              | Nota Aspirada |
 | ---------------------------- | ------------- |
-| Fulano Martínez Díaz         | 8             |
-| Mengano Díaz Martínez        | 6             |
-| Zutano de la Rosa Florida    | 4             |
+| Pol Alaminos Martorell       | 10            |
+
 
 <span style="color:red">También Importante</span>
 -------------------------------------------------
