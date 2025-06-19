@@ -329,15 +329,23 @@ class AñadirCuerpoDialog:
         self.entry_color = ttk.Entry(self.top, width=10)
         self.entry_color.insert(0, "#FFFF64")
         self.entry_color.grid(row=7, column=1, sticky="w", padx=5)
-        btn_color = ttk.Button(self.top, text="🎨", command=self.elegir_color, bg="#DDDDDD")
+        btn_color = ttk.Button(self.top, text="🎨", command=self.elegir_color, bootstyle="secondary")
         btn_color.grid(row=7, column=1, sticky="e", padx=5)
+
+        ttk.Button(self.top, text="Añadir", bootstyle="success", command=self.añadir).grid(row=9, column=0, pady=10)
+        ttk.Button(self.top, text="Cancelar", bootstyle="danger", command=self.top.destroy).grid(row=9, column=1, pady=10)
 
         self.cola_var = tk.BooleanVar()
         tk.Checkbutton(self.top, text="Cola (trail)", variable=self.cola_var).grid(row=8, columnspan=2, pady=3)
 
-        ttk.Button(self.top, text="Añadir", bg="#4CAF50", fg="white", font=("Arial", 12, "bold"), command=self.añadir).grid(row=9, column=0, pady=10)
-        ttk.Button(self.top, text="Cancelar", bg="#f44336", fg="white", font=("Arial", 12, "bold"), command=self.top.destroy).grid(row=9, column=1, pady=10)
-
+        ttk.Button(self.top, text="Añadir", bootstyle="success", command=self.añadir)
+        btn.configure(font=("Arial", 12, "bold"))
+        btn.grid(row=9, column=0, pady=10)
+        
+        ttk.Button(self.top, text="Cancelar", bootstyle="success", command=self.añadir)
+        btn.configure(font=("Arial", 12, "bold"))
+        btn.grid(row=9, column=0, pady=10)
+        
     def elegir_color(self):
         """
         Abre el selector de color para elegir el color del cuerpo.
