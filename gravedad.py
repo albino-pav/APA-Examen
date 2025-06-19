@@ -73,9 +73,6 @@ class SimulatorApp:
         """
         self.root = root
         self.root.title("Simulador Gravitacional")
-        
-        # CORRECCIÓN: No es necesario inicializar el estilo aquí si se usa themename en ttk.Window
-        # self.style = ttk.Style("superhero")
 
         self.bodies = []
         self.running = False
@@ -120,7 +117,6 @@ class SimulatorApp:
         """
         Crea los botones de control y sliders de parámetros en el panel lateral.
         """
-        # MEJORA: Se simplifica el diccionario de estilo ya que el bootstyle se define por botón.
         btn_style = {"width": 25}
 
         botones = [
@@ -136,7 +132,6 @@ class SimulatorApp:
             b = ttk.Button(self.panel, text=text, command=cmd, bootstyle=style, **btn_style)
             b.pack(pady=6)
 
-        # MEJORA: Se elimina el parámetro `res` no utilizado.
         self._crear_slider("FPS", 1, 120, self.fps, self.modificar_fps)
         self._crear_slider("Gravedad (G)", 0.1, 10, self.G, self.modificar_g)
         self._crear_slider("Delta tiempo (dt)", 0.01, 1, self.dt, self.modificar_dt)
@@ -195,12 +190,10 @@ class SimulatorApp:
 
     def guardar_constelacion(self):
         if not self.bodies:
-            # MEJORA: Usar Messagebox de ttkbootstrap para consistencia visual.
             Messagebox.show_warning("No hay cuerpos que guardar.", "Guardar")
             return
         path = filedialog.asksaveasfilename(defaultextension=".json", filetypes=[("JSON files","*.json")])
         if path:
-            # NOTA: se excluye 'trail' del guardado para evitar archivos grandes y porque se regenera.
             data_to_save = [
                 {k: v for k, v in b.__dict__.items() if k != 'trail'} 
                 for b in self.bodies
@@ -260,7 +253,7 @@ class AñadirCuerpoDialog:
         """
         Inicializa la ventana de diálogo para añadir un nuevo cuerpo celeste.
         """
-        # MEJORA: Usar Toplevel y Checkbutton de ttk para consistencia.
+        
         self.top = ttk.Toplevel(master)
         self.top.title("Añadir cuerpo")
         self.app = app
@@ -293,7 +286,6 @@ class AñadirCuerpoDialog:
         self.cola_var = ttk.BooleanVar()
         ttk.Checkbutton(frame, text="Dejar cola (trail)", variable=self.cola_var, bootstyle="primary").grid(row=8, columnspan=3, pady=8)
 
-        # CORRECCIÓN: Botones creados de forma correcta y única, usando bootstyle.
         btn_add = ttk.Button(frame, text="Añadir", command=self.añadir, bootstyle="success")
         btn_add.grid(row=9, column=0, columnspan=2, pady=10, padx=5, sticky="ew")
         
